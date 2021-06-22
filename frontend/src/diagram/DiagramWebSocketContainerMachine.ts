@@ -35,12 +35,19 @@ export interface DiagramWebSocketContainerStateSchema {
         complete: {};
       };
     };
+    selectionDialog: {
+      states: {
+        visible: {};
+        hidden: {};
+      }
+    }
   };
 }
 
 export type SchemaValue = {
   toast: 'visible' | 'hidden';
   diagramWebSocketContainer: 'loading' | 'ready' | 'empty' | 'complete';
+  selectionDialog: 'visible' | 'hidden';
 };
 
 export interface DiagramWebSocketContainerContext {
@@ -56,10 +63,15 @@ export interface DiagramWebSocketContainerContext {
   zoomLevel: string;
   subscribers: Subscriber[];
   message: string | null;
+  selectedObjectId: string | null;
 }
 
 export type ShowToastEvent = { type: 'SHOW_TOAST'; message: string };
 export type HideToastEvent = { type: 'HIDE_TOAST' };
+export type ShowSelectionDialogEvent = { type: 'SHOW_SELECTION_DIALOG' };
+export type HideSelectionDialogEvent = { type: 'HIDE_SELECTION_DIALOG' };
+export type HandleSelectedObjectInSelectionDialogEvent = { type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG', selectedObjectId: string };
+export type ResetSelectedObjectInSelectionDialogEvent = { type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG' };
 export type SwithRepresentationEvent = { type: 'SWITCH_REPRESENTATION'; representationId: string };
 export type SetToolSectionsEvent = { type: 'SET_TOOL_SECTIONS'; toolSections: ToolSection[] };
 export type SetDefaultToolEvent = { type: 'SET_DEFAULT_TOOL'; defaultTool: Tool };
@@ -71,6 +83,7 @@ export type SelectionEvent = { type: 'SELECTION'; selection: Selection };
 export type SelectedElementEvent = { type: 'SELECTED_ELEMENT'; selection: Selection };
 export type SelectZoomLevelEvent = { type: 'SELECT_ZOOM_LEVEL'; level: string };
 export type CompleteEvent = { type: 'HANDLE_COMPLETE' };
+// TODO Add event for selection dialog
 
 export type InitializeRepresentationEvent = {
   type: 'INITIALIZE';
@@ -91,6 +104,10 @@ export type InitializeRepresentationEvent = {
 export type DiagramWebSocketContainerEvent =
   | ShowToastEvent
   | HideToastEvent
+  | ShowSelectionDialogEvent
+  | HideSelectionDialogEvent
+  | HandleSelectedObjectInSelectionDialogEvent
+  | ResetSelectedObjectInSelectionDialogEvent
   | SwithRepresentationEvent
   | InitializeRepresentationEvent
   | SetToolSectionsEvent
@@ -124,6 +141,7 @@ export const diagramWebSocketContainerMachine = Machine<
       zoomLevel: '1',
       subscribers: [],
       message: null,
+      selectedObjectId: null,
     },
     states: {
       toast: {
@@ -249,6 +267,41 @@ export const diagramWebSocketContainerMachine = Machine<
           },
         },
       },
+      selectionDialog: {
+        initial: 'hidden',
+        states: {
+          hidden: {
+            on: {
+              SHOW_SELECTION_DIALOG: {
+                target: 'visible',
+              },
+              HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
+                target: 'hidden',
+                actions: 'handleSelectedObjectInSelectionDialog',
+              },
+              RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
+                target: 'hidden',
+                actions: 'resetSelectedObjectInSelectionDialog',
+              }
+            },
+          },
+          visible: {
+            on: {
+              HIDE_SELECTION_DIALOG: {
+                target: 'hidden',
+              },
+              HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
+                target: 'visible',
+                actions: 'handleSelectedObjectInSelectionDialog',
+              },
+              RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
+                target: 'visible',
+                actions: 'resetSelectedObjectInSelectionDialog',
+              }
+            },
+          },
+        },
+      },
     },
   },
   {
@@ -306,6 +359,7 @@ export const diagramWebSocketContainerMachine = Machine<
           newSelection: undefined,
           zoomLevel: '1',
           message: undefined,
+          selectedObjectId: undefined,
         };
       }),
 
@@ -367,7 +421,13 @@ export const diagramWebSocketContainerMachine = Machine<
         const { level } = event as SelectZoomLevelEvent;
         return { zoomLevel: level };
       }),
-
+      handleSelectedObjectInSelectionDialog: assign((_, event) => {
+        const { selectedObjectId } = event as HandleSelectedObjectInSelectionDialogEvent;
+        return { selectedObjectId: selectedObjectId };
+      }),
+      resetSelectedObjectInSelectionDialog: assign((_) => {
+        return { selectedObjectId: null };
+      }),
       handleComplete: assign((_) => {
         return {
           diagramServer: undefined,
@@ -378,6 +438,7 @@ export const diagramWebSocketContainerMachine = Machine<
           latestSelection: undefined,
           newSelection: undefined,
           zoomLevel: undefined,
+          selectedObjectId: undefined,
         };
       }),
       setMessage: assign((_, event) => {

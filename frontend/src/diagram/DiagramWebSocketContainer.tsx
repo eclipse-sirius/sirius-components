@@ -24,8 +24,11 @@ import {
   DiagramWebSocketContainerContext,
   DiagramWebSocketContainerEvent,
   diagramWebSocketContainerMachine,
+  HandleSelectedObjectInSelectionDialogEvent,
+  HideSelectionDialogEvent,
   HideToastEvent,
   InitializeRepresentationEvent,
+  ResetSelectedObjectInSelectionDialogEvent,
   SchemaValue,
   SelectedElementEvent,
   SelectionEvent,
@@ -34,6 +37,7 @@ import {
   SetContextualPaletteEvent,
   SetDefaultToolEvent,
   SetToolSectionsEvent,
+  ShowSelectionDialogEvent,
   ShowToastEvent,
   SubscribersUpdatedEvent,
   SwithRepresentationEvent,
@@ -65,6 +69,7 @@ import {
 import { Toolbar } from 'diagram/Toolbar';
 import { canInvokeTool } from 'diagram/toolServices';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import { SelectionDialogWebSocketContainer } from 'selection/SelectionDialogWebSocketContainer';
 import { EditLabelAction, FitToScreenAction, SEdge, SNode } from 'sprotty';
 import { v4 as uuid } from 'uuid';
 import { RepresentationComponentProps } from 'workbench/Workbench.types';
@@ -262,7 +267,7 @@ export const DiagramWebSocketContainer = ({
   const [{ value, context }, dispatch] = useMachine<DiagramWebSocketContainerContext, DiagramWebSocketContainerEvent>(
     diagramWebSocketContainerMachine
   );
-  const { toast, diagramWebSocketContainer } = value as SchemaValue;
+  const { toast, diagramWebSocketContainer, selectionDialog } = value as SchemaValue;
   const {
     id,
     displayedRepresentationId,
@@ -275,6 +280,7 @@ export const DiagramWebSocketContainer = ({
     zoomLevel,
     subscribers,
     message,
+    selectedObjectId,
   } = context;
 
   const [
@@ -568,6 +574,17 @@ export const DiagramWebSocketContainer = ({
     }
   }, [toolSectionLoading, toolSectionData, diagramWebSocketContainer, dispatch]);
 
+  useEffect(() => {
+    if (selectedObjectId && activeTool && contextualPalette) {
+      invokeTool(activeTool, contextualPalette.element.id, contextualPalette.startingPosition);
+      diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+      const resetSelectedObjectInSelectionDialogEvent: ResetSelectedObjectInSelectionDialogEvent = {
+        type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG',
+      };
+      dispatch(resetSelectedObjectInSelectionDialogEvent);
+    }
+  }, [activeTool, diagramServer, invokeTool, dispatch, selectedObjectId, contextualPalette]);
+
   const { error } = useSubscription(diagramEventSubscription, {
     variables: {
       input: {
@@ -767,8 +784,16 @@ export const DiagramWebSocketContainer = ({
         edgeCreationFeedback.init(x, y);
         diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION, sourceElement: element });
       } else if (tool.__typename === 'CreateNodeTool') {
-        invokeTool(tool, element.id, startingPosition);
-        diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+        // Call Selection Dialog on Composite Processor (temporary)
+        if (tool.label === 'Composite Processor') {
+          const showSelectionDialogEvent: ShowSelectionDialogEvent = { type: 'SHOW_SELECTION_DIALOG' };
+          dispatch(showSelectionDialogEvent);
+          const setActiveToolEvent: SetActiveToolEvent = { type: 'SET_ACTIVE_TOOL', activeTool: tool };
+          dispatch(setActiveToolEvent);
+        } else {
+          invokeTool(tool, element.id, startingPosition);
+          diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+        }
       }
       const setDefaultToolEvent: SetDefaultToolEvent = { type: 'SET_DEFAULT_TOOL', defaultTool: tool };
       dispatch(setDefaultToolEvent);
@@ -786,6 +811,7 @@ export const DiagramWebSocketContainer = ({
       </div>
     );
   }
+
   let content = (
     <div id="diagram-container" className={classes.diagramContainer}>
       <div id="diagram-wrapper" className={classes.diagramWrapper}>
@@ -817,7 +843,22 @@ export const DiagramWebSocketContainer = ({
         subscribers={subscribers}
       />
       {content}
-
+      <SelectionDialogWebSocketContainer
+        editingContextId={editingContextId}
+        open={selectionDialog === 'visible'}
+        onClose={() => {
+          dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
+          dispatch({ type: 'SET_ACTIVE_TOOL', activeTool: null } as SetActiveToolEvent);
+          dispatch({ type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG' } as ResetSelectedObjectInSelectionDialogEvent);
+        }}
+        onFinish={(selectedObjectId) => {
+          dispatch({
+            type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG',
+            selectedObjectId,
+          } as HandleSelectedObjectInSelectionDialogEvent);
+          dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
+        }}
+      />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
