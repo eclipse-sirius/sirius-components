@@ -1,0 +1,10 @@
+= sirius-web-spring-collaborative-selection
+
+== Goal
+
+This project provides support for our selection collaborative edition layer.
+
+== Dependencies
+
+- sirius-web-collaborative-selection-api
+- sirius-web-services-api

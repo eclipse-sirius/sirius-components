@@ -1,0 +1,10 @@
+= sirius-web-collaborative-selection-api
+
+== Goal
+
+This project provides the API of our selection collaborative edition layer.
+
+== Dependencies
+
+- sirius-web-collaborative-api
+- sirius-web-selection

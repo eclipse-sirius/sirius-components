@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2019, 2021 Obeo.
+ Copyright (c) 2021 Obeo.
  This program and the accompanying materials
  are made available under the terms of the Eclipse Public License v2.0
  which accompanies this distribution, and is available at
@@ -17,14 +17,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.2</version>
+		<version>2.5.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.eclipse.sirius.web</groupId>
-	<artifactId>sirius-web-graphql</artifactId>
+	<artifactId>sirius-web-collaborative-selection-api</artifactId>
 	<version>0.3.5</version>
-	<name>sirius-web-graphql</name>
-	<description>Sirius Web GraphQL</description>
+	<name>sirius-web-collaborative-selection-api</name>
+	<description>Sirius Web Collaborative Selection API</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -41,73 +41,17 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-interpreter</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-annotations</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-annotations-spring</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-spring-graphql-api</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-graphql-schema</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-services-api</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
 			<artifactId>sirius-web-collaborative-api</artifactId>
 			<version>0.3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-collaborative-diagrams-api</artifactId>
+			<artifactId>sirius-web-selection</artifactId>
 			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-collaborative-forms-api</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-collaborative-selection-api</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-collaborative-trees-api</artifactId>
-			<version>0.3.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sirius.web</groupId>
 			<artifactId>sirius-web-tests</artifactId>
-			<version>0.3.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sirius.web</groupId>
-			<artifactId>sirius-web-spring-tests</artifactId>
 			<version>0.3.5</version>
 			<scope>test</scope>
 		</dependency>
