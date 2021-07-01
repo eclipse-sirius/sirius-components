@@ -420,6 +420,7 @@ export const DiagramWebSocketContainer = ({
             toolId,
             startingPositionX,
             startingPositionY,
+            selectedObjectId,
           };
           invokeNodeToolMutation({ variables: { input } });
         }
@@ -427,7 +428,7 @@ export const DiagramWebSocketContainer = ({
         dispatch(setActiveToolEvent);
       }
     },
-    [editingContextId, representationId, invokeNodeToolMutation, invokeEdgeToolMutation, dispatch]
+    [editingContextId, representationId, selectedObjectId, invokeNodeToolMutation, invokeEdgeToolMutation, dispatch]
   );
 
   const moveElement = useCallback(
@@ -830,22 +831,11 @@ export const DiagramWebSocketContainer = ({
       </div>
     );
   }
-
-  return (
-    <div className={classes.container}>
-      <Toolbar
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
-        onFitToScreen={onFitToScreen}
-        onArrangeAll={onArrangeAll}
-        setZoomLevel={setZoomLevel}
-        zoomLevel={zoomLevel}
-        subscribers={subscribers}
-      />
-      {content}
+  let selectModelElementDialog = null;
+  if (selectionDialog === 'visible') {
+    selectModelElementDialog = (
       <SelectionDialogWebSocketContainer
         editingContextId={editingContextId}
-        open={selectionDialog === 'visible'}
         onClose={() => {
           dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
           dispatch({ type: 'SET_ACTIVE_TOOL', activeTool: null } as SetActiveToolEvent);
@@ -859,6 +849,22 @@ export const DiagramWebSocketContainer = ({
           dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
         }}
       />
+    );
+  }
+
+  return (
+    <div className={classes.container}>
+      <Toolbar
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        onFitToScreen={onFitToScreen}
+        onArrangeAll={onArrangeAll}
+        setZoomLevel={setZoomLevel}
+        zoomLevel={zoomLevel}
+        subscribers={subscribers}
+      />
+      {content}
+      {selectModelElementDialog}
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

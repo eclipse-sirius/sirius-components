@@ -51,6 +51,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 @Service
 public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler {
 
+    private static final String SELECTED_OBJECT = "selectedObject"; //$NON-NLS-1$
+
     private final IObjectService objectService;
 
     private final IDiagramQueryService diagramQueryService;
@@ -93,7 +95,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
                     .map(CreateNodeTool.class::cast);
             // @formatter:on
             if (optionalTool.isPresent()) {
-                Status status = this.executeTool(editingContext, diagramContext, input.getDiagramElementId(), optionalTool.get(), input.getStartingPositionX(), input.getStartingPositionY());
+                Status status = this.executeTool(editingContext, diagramContext, input.getDiagramElementId(), optionalTool.get(), input.getStartingPositionX(), input.getStartingPositionY(),
+                        input.getSelectedObjectId());
                 if (Objects.equals(status, Status.OK)) {
                     return new EventHandlerResponse(new ChangeDescription(ChangeKind.SEMANTIC_CHANGE, diagramInput.getRepresentationId()),
                             new InvokeNodeToolOnDiagramSuccessPayload(diagramInput.getId(), diagram));
@@ -104,7 +107,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
         return new EventHandlerResponse(new ChangeDescription(ChangeKind.NOTHING, diagramInput.getRepresentationId()), new ErrorPayload(diagramInput.getId(), message));
     }
 
-    private Status executeTool(IEditingContext editingContext, IDiagramContext diagramContext, UUID diagramElementId, CreateNodeTool tool, double startingPositionX, double startingPositionY) {
+    private Status executeTool(IEditingContext editingContext, IDiagramContext diagramContext, UUID diagramElementId, CreateNodeTool tool, double startingPositionX, double startingPositionY,
+            String selectedObjectId) {
         Status result = Status.ERROR;
         Diagram diagram = diagramContext.getDiagram();
         Optional<Node> node = this.diagramQueryService.findNodeById(diagram, diagramElementId);
@@ -120,7 +124,12 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
             variableManager.put(IDiagramContext.DIAGRAM_CONTEXT, diagramContext);
             variableManager.put(IEditingContext.EDITING_CONTEXT, editingContext);
             variableManager.put(VariableManager.SELF, self.get());
-
+            if (selectedObjectId != null) {
+                Optional<Object> selectionVariable = this.objectService.getObject(editingContext, selectedObjectId);
+                if (selectionVariable.isPresent()) {
+                    variableManager.put(SELECTED_OBJECT, selectionVariable.get());
+                }
+            }
             result = tool.getHandler().apply(variableManager);
 
             Position newPosition = Position.at(startingPositionX, startingPositionY);

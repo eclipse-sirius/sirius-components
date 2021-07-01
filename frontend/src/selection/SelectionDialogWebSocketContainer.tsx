@@ -10,6 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { useSubscription } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,20 +25,46 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Snackbar from '@material-ui/core/Snackbar';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import InboxIcon from '@material-ui/icons/Inbox';
 import { useMachine } from '@xstate/react';
-import React, { useState } from 'react';
+import { httpOrigin } from 'common/URL';
+import gql from 'graphql-tag';
+import { NoIcon } from 'icons';
+import React, { useEffect, useState } from 'react';
 import { SelectionDialogWebSocketContainerProps } from './SelectionDialogWebSocketContainer.types';
 import {
+  HandleCompleteEvent,
   HandleSelectionUpdatedEvent,
+  HandleSubscriptionResultEvent,
   HideToastEvent,
   SchemaValue,
   SelectionDialogWebSocketContainerContext,
   SelectionDialogWebSocketContainerEvent,
   selectionDialogWebSocketContainerMachine,
+  ShowToastEvent,
 } from './SelectionDialogWebSocketContainerMachine';
+import { GQLSelectionEventSubscription } from './SelectionEvent.types';
 
-const useNewObjectModalStyles = makeStyles((theme) =>
+const selectionEventSubscription = gql`
+  subscription selectionEvent($input: SelectionEventInput!) {
+    selectionEvent(input: $input) {
+      __typename
+      ... on SelectionRefreshedEventPayload {
+        selection {
+          id
+          targetObjectId
+          message
+          objects {
+            id
+            label
+            iconURL
+          }
+        }
+      }
+    }
+  }
+`;
+
+const useSelectionObjectModalStyles = makeStyles((theme) =>
   createStyles({
     root: {
       width: '100%',
@@ -53,43 +80,84 @@ const useNewObjectModalStyles = makeStyles((theme) =>
  */
 export const SelectionDialogWebSocketContainer = ({
   editingContextId,
-  open,
   onClose,
   onFinish,
 }: SelectionDialogWebSocketContainerProps) => {
-  const classes = useNewObjectModalStyles();
+  const classes = useSelectionObjectModalStyles();
 
-  const [{ value }, dispatch] = useMachine<
+  const [{ value, context }, dispatch] = useMachine<
     SelectionDialogWebSocketContainerContext,
     SelectionDialogWebSocketContainerEvent
   >(selectionDialogWebSocketContainerMachine);
 
-  const { toast } = value as SchemaValue;
+  const { toast, selectionWebSocketContainer } = value as SchemaValue;
+  const { id, selection, message } = context;
+
+  const { error } = useSubscription<GQLSelectionEventSubscription>(selectionEventSubscription, {
+    variables: {
+      input: {
+        id,
+        editingContextId,
+        selectionId: 'ef5714e0-519b-3aa6-85cd-ff7d28843b70',
+        targetObjectId: 'a216b92d-53af-4044-a949-8f2b3c208aad',
+      },
+    },
+    fetchPolicy: 'no-cache',
+    skip: selectionWebSocketContainer === 'complete',
+    onSubscriptionData: ({ subscriptionData }) => {
+      const handleDataEvent: HandleSubscriptionResultEvent = {
+        type: 'HANDLE_SUBSCRIPTION_RESULT',
+        result: subscriptionData,
+      };
+      dispatch(handleDataEvent);
+    },
+    onSubscriptionComplete: () => {
+      const completeEvent: HandleCompleteEvent = { type: 'HANDLE_COMPLETE' };
+      dispatch(completeEvent);
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      const { message } = error;
+      const showToastEvent: ShowToastEvent = { type: 'SHOW_TOAST', message };
+      dispatch(showToastEvent);
+    }
+  }, [error, dispatch]);
 
   const [selectedIndex, setSelectedIndex] = useState(null);
 
-  const handleListItemClick = (index: number) => {
-    setSelectedIndex(index);
-    dispatch({ type: 'HANDLE_SELECTION_UPDATED', selectedObjectId: index.toString() } as HandleSelectionUpdatedEvent);
+  const handleListItemClick = (id: string) => {
+    setSelectedIndex(id);
+    dispatch({ type: 'HANDLE_SELECTION_UPDATED', selectedObjectId: id } as HandleSelectionUpdatedEvent);
   };
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} aria-labelledby="dialog-title" maxWidth="xs" fullWidth>
+      <Dialog open onClose={onClose} aria-labelledby="dialog-title" maxWidth="xs" fullWidth>
         <DialogTitle id="selection-dialog-title">Selection Dialog</DialogTitle>
         <DialogContent>
-          <DialogContentText>{'The message to display'}</DialogContentText>
+          <DialogContentText>{selection?.message}</DialogContentText>
           <List className={classes.root}>
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
+            {selection?.objects.map((selectionObject) => (
               <ListItem
                 button
-                key={`item-${item}`}
-                selected={selectedIndex === item}
-                onClick={() => handleListItemClick(item)}>
+                key={`item-${selectionObject.id}`}
+                selected={selectedIndex === selectionObject.id}
+                onClick={() => handleListItemClick(selectionObject.id)}>
                 <ListItemIcon>
-                  <InboxIcon />
+                  {selectionObject.iconURL ? (
+                    <img
+                      height="24"
+                      width="24"
+                      alt={selectionObject.label}
+                      src={httpOrigin + selectionObject.iconURL}
+                    />
+                  ) : (
+                    <NoIcon title={selectionObject.label} />
+                  )}
                 </ListItemIcon>
-                <ListItemText primary={`Item ${item}`} />
+                <ListItemText primary={selectionObject.label} />
               </ListItem>
             ))}
           </List>
@@ -101,7 +169,7 @@ export const SelectionDialogWebSocketContainer = ({
             data-testid="finish-action"
             color="primary"
             onClick={() => {
-              onFinish('retrieveSelectedObjectIdWhenListItemsWillBeFilledWithRealObjects');
+              onFinish(selectedIndex);
             }}>
             Finish
           </Button>
@@ -115,7 +183,7 @@ export const SelectionDialogWebSocketContainer = ({
         open={toast === 'visible'}
         autoHideDuration={3000}
         onClose={() => dispatch({ type: 'HIDE_TOAST' } as HideToastEvent)}
-        message={'retrieveErrorMessage'}
+        message={message}
         action={
           <IconButton
             size="small"

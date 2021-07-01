@@ -40,7 +40,7 @@ export interface SelectionDialogWebSocketContainerStateSchema {
 
 export type SchemaValue = {
   toast: 'visible' | 'hidden';
-  selectionDialogWebSocketContainer: 'idle' | 'ready' | 'complete';
+  selectionWebSocketContainer: 'idle' | 'ready' | 'complete';
 };
 
 export interface SelectionDialogWebSocketContainerContext {

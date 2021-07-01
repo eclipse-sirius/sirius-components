@@ -39,8 +39,8 @@ export interface DiagramWebSocketContainerStateSchema {
       states: {
         visible: {};
         hidden: {};
-      }
-    }
+      };
+    };
   };
 }
 
@@ -70,7 +70,10 @@ export type ShowToastEvent = { type: 'SHOW_TOAST'; message: string };
 export type HideToastEvent = { type: 'HIDE_TOAST' };
 export type ShowSelectionDialogEvent = { type: 'SHOW_SELECTION_DIALOG' };
 export type HideSelectionDialogEvent = { type: 'HIDE_SELECTION_DIALOG' };
-export type HandleSelectedObjectInSelectionDialogEvent = { type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG', selectedObjectId: string };
+export type HandleSelectedObjectInSelectionDialogEvent = {
+  type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG';
+  selectedObjectId: string;
+};
 export type ResetSelectedObjectInSelectionDialogEvent = { type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG' };
 export type SwithRepresentationEvent = { type: 'SWITCH_REPRESENTATION'; representationId: string };
 export type SetToolSectionsEvent = { type: 'SET_TOOL_SECTIONS'; toolSections: ToolSection[] };
@@ -83,7 +86,6 @@ export type SelectionEvent = { type: 'SELECTION'; selection: Selection };
 export type SelectedElementEvent = { type: 'SELECTED_ELEMENT'; selection: Selection };
 export type SelectZoomLevelEvent = { type: 'SELECT_ZOOM_LEVEL'; level: string };
 export type CompleteEvent = { type: 'HANDLE_COMPLETE' };
-// TODO Add event for selection dialog
 
 export type InitializeRepresentationEvent = {
   type: 'INITIALIZE';
@@ -275,14 +277,10 @@ export const diagramWebSocketContainerMachine = Machine<
               SHOW_SELECTION_DIALOG: {
                 target: 'visible',
               },
-              HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
-                target: 'hidden',
-                actions: 'handleSelectedObjectInSelectionDialog',
-              },
               RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
                 target: 'hidden',
                 actions: 'resetSelectedObjectInSelectionDialog',
-              }
+              },
             },
           },
           visible: {
@@ -297,7 +295,7 @@ export const diagramWebSocketContainerMachine = Machine<
               RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
                 target: 'visible',
                 actions: 'resetSelectedObjectInSelectionDialog',
-              }
+              },
             },
           },
         },

@@ -13,7 +13,6 @@
 
 export interface SelectionDialogWebSocketContainerProps {
   editingContextId: string;
-  open: boolean;
   onClose: () => void;
   onFinish: (selectedObjectId: string) => void;
 }
