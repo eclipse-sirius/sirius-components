@@ -18,14 +18,14 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { useMachine } from '@xstate/react';
 import { ServerContext } from 'common/ServerContext';
-import { Palette, Tool } from 'diagram/DiagramWebSocketContainer.types';
+import { CreateNodeTool, Palette, Tool } from 'diagram/DiagramWebSocketContainer.types';
 import {
+  CloseSelectionDialogEvent,
   DiagramRefreshedEvent,
   DiagramWebSocketContainerContext,
   DiagramWebSocketContainerEvent,
   diagramWebSocketContainerMachine,
   HandleSelectedObjectInSelectionDialogEvent,
-  HideSelectionDialogEvent,
   HideToastEvent,
   InitializeRepresentationEvent,
   ResetSelectedObjectInSelectionDialogEvent,
@@ -710,7 +710,14 @@ export const DiagramWebSocketContainer = ({
   }, [deleteFromDiagramLoading, deleteFromDiagramData, deleteFromDiagramError, handleError]);
   useEffect(() => {
     handleError(invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError);
-  }, [invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError, handleError]);
+    if (!invokeNodeToolLoading) {
+      const setContextualPaletteEvent: SetContextualPaletteEvent = {
+        type: 'SET_CONTEXTUAL_PALETTE',
+        contextualPalette: null,
+      };
+      dispatch(setContextualPaletteEvent);
+    }
+  }, [invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError, handleError, dispatch]);
   useEffect(() => {
     handleError(invokeEdgeToolLoading, invokeEdgeToolData, invokeEdgeToolError);
   }, [invokeEdgeToolLoading, invokeEdgeToolData, invokeEdgeToolError, handleError]);
@@ -785,9 +792,10 @@ export const DiagramWebSocketContainer = ({
         edgeCreationFeedback.init(x, y);
         diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION, sourceElement: element });
       } else if (tool.__typename === 'CreateNodeTool') {
-        // Call Selection Dialog on Composite Processor (temporary)
-        if (tool.label === 'Composite Processor') {
-          const showSelectionDialogEvent: ShowSelectionDialogEvent = { type: 'SHOW_SELECTION_DIALOG' };
+        if (tool.selectionDescriptionId) {
+          const showSelectionDialogEvent: ShowSelectionDialogEvent = {
+            type: 'SHOW_SELECTION_DIALOG',
+          };
           dispatch(showSelectionDialogEvent);
           const setActiveToolEvent: SetActiveToolEvent = { type: 'SET_ACTIVE_TOOL', activeTool: tool };
           dispatch(setActiveToolEvent);
@@ -831,27 +839,26 @@ export const DiagramWebSocketContainer = ({
       </div>
     );
   }
-  let selectModelElementDialog = null;
+
+  let selectModelElementDialog;
   if (selectionDialog === 'visible') {
     selectModelElementDialog = (
       <SelectionDialogWebSocketContainer
         editingContextId={editingContextId}
+        selectionRepresentationId={(activeTool as CreateNodeTool).selectionDescriptionId}
+        targetObjectId={contextualPalette.element.targetObjectId}
         onClose={() => {
-          dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
-          dispatch({ type: 'SET_ACTIVE_TOOL', activeTool: null } as SetActiveToolEvent);
-          dispatch({ type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG' } as ResetSelectedObjectInSelectionDialogEvent);
+          dispatch({ type: 'CLOSE_SELECTION_DIALOG' } as CloseSelectionDialogEvent);
         }}
         onFinish={(selectedObjectId) => {
           dispatch({
             type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG',
             selectedObjectId,
           } as HandleSelectedObjectInSelectionDialogEvent);
-          dispatch({ type: 'HIDE_SELECTION_DIALOG' } as HideSelectionDialogEvent);
         }}
       />
     );
   }
-
   return (
     <div className={classes.container}>
       <Toolbar

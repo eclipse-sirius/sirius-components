@@ -55,7 +55,7 @@ public final class SelectionRefreshedEventPayload implements IPayload {
 
     @Override
     public String toString() {
-        String pattern = "{0} '{'id: {1}, form: '{'id: {2}, label: {3}'}''}'"; //$NON-NLS-1$
+        String pattern = "{0} '{'id: {1}, selection: '{'id: {2}, label: {3}'}''}'"; //$NON-NLS-1$
         return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.id, this.selection.getId(), this.selection.getLabel());
     }
 }

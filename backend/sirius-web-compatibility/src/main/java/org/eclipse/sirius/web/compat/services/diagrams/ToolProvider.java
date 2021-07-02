@@ -45,6 +45,7 @@ import org.eclipse.sirius.web.compat.api.IAQLInterpreterFactory;
 import org.eclipse.sirius.web.compat.api.IIdentifierProvider;
 import org.eclipse.sirius.web.compat.api.IModelOperationHandlerSwitchProvider;
 import org.eclipse.sirius.web.compat.api.IToolImageProviderFactory;
+import org.eclipse.sirius.web.compat.services.SelectModelElementVariableProvider;
 import org.eclipse.sirius.web.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.web.diagrams.description.NodeDescription;
 import org.eclipse.sirius.web.diagrams.tools.CreateEdgeTool;
@@ -204,6 +205,11 @@ public class ToolProvider implements IToolProvider {
         String label = new IdentifiedElementQuery(nodeCreationTool).getLabel();
         String imagePath = this.toolImageProviderFactory.getToolImageProvider(nodeCreationTool).get();
         List<NodeDescription> targetDescriptions = this.getParentNodeDescriptions(nodeCreationTool.getNodeMappings(), id2NodeDescriptions);
+        var selectModelElementVariableOpt = new SelectModelElementVariableProvider().getSelectModelElementVariable(nodeCreationTool.getVariable());
+        String selectionDescriptionId = null;
+        if (selectModelElementVariableOpt.isPresent()) {
+            selectionDescriptionId = this.identifierProvider.getIdentifier(selectModelElementVariableOpt.get());
+        }
         // @formatter:off
         return CreateNodeTool.newCreateNodeTool(id)
                 .label(label)
@@ -211,6 +217,7 @@ public class ToolProvider implements IToolProvider {
                 .handler(this.createNodeCreationHandler(interpreter, nodeCreationTool))
                 .targetDescriptions(targetDescriptions)
                 .appliesToDiagramRoot(this.atLeastOneRootMapping(nodeCreationTool.getNodeMappings()))
+                .selectionDescriptionId(selectionDescriptionId)
                 .build();
         // @formatter:on
     }
@@ -220,6 +227,11 @@ public class ToolProvider implements IToolProvider {
         String label = new IdentifiedElementQuery(containerCreationDescription).getLabel();
         String imagePath = this.toolImageProviderFactory.getToolImageProvider(containerCreationDescription).get();
         List<NodeDescription> targetDescriptions = this.getParentNodeDescriptions(containerCreationDescription.getContainerMappings(), id2NodeDescriptions);
+        var selectModelElementVariableOpt = new SelectModelElementVariableProvider().getSelectModelElementVariable(containerCreationDescription.getVariable());
+        String selectionDescriptionId = null;
+        if (selectModelElementVariableOpt.isPresent()) {
+            selectionDescriptionId = this.identifierProvider.getIdentifier(selectModelElementVariableOpt.get());
+        }
         // @formatter:off
         return CreateNodeTool.newCreateNodeTool(id)
                 .label(label)
@@ -227,6 +239,7 @@ public class ToolProvider implements IToolProvider {
                 .handler(this.createContainerCreationHandler(interpreter, containerCreationDescription))
                 .targetDescriptions(targetDescriptions)
                 .appliesToDiagramRoot(this.atLeastOneRootMapping(containerCreationDescription.getContainerMappings()))
+                .selectionDescriptionId(selectionDescriptionId)
                 .build();
         // @formatter:on
     }
@@ -319,6 +332,10 @@ public class ToolProvider implements IToolProvider {
             InitialNodeCreationOperation initialOperation = toolDescription.getInitialOperation();
             return variableManager -> {
                 Map<String, Object> variables = variableManager.getVariables();
+                var selectModelelementVariableOpt = new SelectModelElementVariableProvider().getSelectModelElementVariable(toolDescription.getVariable());
+                if (selectModelelementVariableOpt.isPresent()) {
+                    variables.put(selectModelelementVariableOpt.get().getName(), variables.get(VariableManager.SELECTED_OBJECT_IN_SELECTION_REPRESENTATION));
+                }
                 var modelOperationHandlerSwitch = this.modelOperationHandlerSwitchProvider.getModelOperationHandlerSwitch(interpreter);
                 return modelOperationHandlerSwitch.apply(initialOperation.getFirstModelOperations()).map(handler -> {
                     return handler.handle(variables);
@@ -334,6 +351,10 @@ public class ToolProvider implements IToolProvider {
             InitialNodeCreationOperation initialOperation = toolDescription.getInitialOperation();
             return variableManager -> {
                 Map<String, Object> variables = variableManager.getVariables();
+                var selectModelelementVariableOpt = new SelectModelElementVariableProvider().getSelectModelElementVariable(toolDescription.getVariable());
+                if (selectModelelementVariableOpt.isPresent()) {
+                    variables.put(selectModelelementVariableOpt.get().getName(), variables.get(VariableManager.SELECTED_OBJECT_IN_SELECTION_REPRESENTATION));
+                }
                 var modelOperationHandlerSwitch = this.modelOperationHandlerSwitchProvider.getModelOperationHandlerSwitch(interpreter);
                 return modelOperationHandlerSwitch.apply(initialOperation.getFirstModelOperations()).map(handler -> {
                     return handler.handle(variables);

@@ -50,6 +50,7 @@ export interface Tool {
 
 export interface CreateNodeTool extends Tool {
   appliesToDiagramRoot: boolean;
+  selectionDescriptionId: string;
 }
 
 export interface CreateEdgeTool extends Tool {

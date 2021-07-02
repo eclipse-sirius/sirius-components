@@ -192,7 +192,6 @@ export class SiriusWebWebSocketDiagramServer extends ModelSource {
     if (newRoot) {
       this.currentRoot = newRoot;
     }
-    this.actionDispatcher.dispatchAll([{ kind: HIDE_CONTEXTUAL_TOOLBAR_ACTION }]);
   }
 
   handleApplyLabelEditAction(action) {

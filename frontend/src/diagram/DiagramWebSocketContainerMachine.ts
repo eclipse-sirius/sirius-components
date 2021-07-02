@@ -70,6 +70,7 @@ export type ShowToastEvent = { type: 'SHOW_TOAST'; message: string };
 export type HideToastEvent = { type: 'HIDE_TOAST' };
 export type ShowSelectionDialogEvent = { type: 'SHOW_SELECTION_DIALOG' };
 export type HideSelectionDialogEvent = { type: 'HIDE_SELECTION_DIALOG' };
+export type CloseSelectionDialogEvent = { type: 'CLOSE_SELECTION_DIALOG' };
 export type HandleSelectedObjectInSelectionDialogEvent = {
   type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG';
   selectedObjectId: string;
@@ -108,6 +109,7 @@ export type DiagramWebSocketContainerEvent =
   | HideToastEvent
   | ShowSelectionDialogEvent
   | HideSelectionDialogEvent
+  | CloseSelectionDialogEvent
   | HandleSelectedObjectInSelectionDialogEvent
   | ResetSelectedObjectInSelectionDialogEvent
   | SwithRepresentationEvent
@@ -288,8 +290,12 @@ export const diagramWebSocketContainerMachine = Machine<
               HIDE_SELECTION_DIALOG: {
                 target: 'hidden',
               },
+              CLOSE_SELECTION_DIALOG: {
+                target: 'hidden',
+                actions: 'closeSelectionDialog',
+              },
               HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
-                target: 'visible',
+                target: 'hidden',
                 actions: 'handleSelectedObjectInSelectionDialog',
               },
               RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG: {
@@ -425,6 +431,9 @@ export const diagramWebSocketContainerMachine = Machine<
       }),
       resetSelectedObjectInSelectionDialog: assign((_) => {
         return { selectedObjectId: null };
+      }),
+      closeSelectionDialog: assign((_, event) => {
+        return { activeTool: null, selectedObjectId: null };
       }),
       handleComplete: assign((_) => {
         return {

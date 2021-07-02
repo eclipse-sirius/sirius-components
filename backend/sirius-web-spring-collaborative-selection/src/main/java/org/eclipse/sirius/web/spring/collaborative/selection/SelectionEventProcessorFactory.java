@@ -71,7 +71,7 @@ public class SelectionEventProcessorFactory implements IRepresentationEventProce
                 SelectionDescription selectionDescription = optionalSelectionDescription.get();
                 Object object = optionalObject.get();
 
-                IRepresentationEventProcessor selectionEventProcessor = new SelectionEventProcessor(editingContext, selectionDescription, selectionConfiguration.getId(), object,
+                IRepresentationEventProcessor selectionEventProcessor = new SelectionEventProcessor(editingContext, selectionDescription, selectionDescription.getId(), object,
                         this.subscriptionManagerFactory.create());
 
                 // @formatter:off

@@ -47,7 +47,7 @@ export interface SelectionDialogWebSocketContainerContext {
   id: string;
   selection: Selection | null;
   message: string | null;
-  selectedObjectId;
+  selectedObjectId: string | null;
 }
 
 export type ShowToastEvent = { type: 'SHOW_TOAST'; message: string };

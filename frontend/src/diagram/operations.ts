@@ -323,6 +323,7 @@ export const getToolSectionsQuery = gql`
                     id
                   }
                   appliesToDiagramRoot
+                  selectionDescriptionId
                 }
                 ... on CreateEdgeTool {
                   edgeCandidates {

@@ -80,6 +80,8 @@ const useSelectionObjectModalStyles = makeStyles((theme) =>
  */
 export const SelectionDialogWebSocketContainer = ({
   editingContextId,
+  selectionRepresentationId,
+  targetObjectId,
   onClose,
   onFinish,
 }: SelectionDialogWebSocketContainerProps) => {
@@ -98,8 +100,8 @@ export const SelectionDialogWebSocketContainer = ({
       input: {
         id,
         editingContextId,
-        selectionId: 'ef5714e0-519b-3aa6-85cd-ff7d28843b70',
-        targetObjectId: 'a216b92d-53af-4044-a949-8f2b3c208aad',
+        selectionId: selectionRepresentationId,
+        targetObjectId: targetObjectId,
       },
     },
     fetchPolicy: 'no-cache',

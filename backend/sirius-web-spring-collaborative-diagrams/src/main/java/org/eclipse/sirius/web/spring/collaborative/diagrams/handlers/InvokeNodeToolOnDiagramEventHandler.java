@@ -30,6 +30,7 @@ import org.eclipse.sirius.web.collaborative.diagrams.api.dto.InvokeNodeToolOnDia
 import org.eclipse.sirius.web.core.api.ErrorPayload;
 import org.eclipse.sirius.web.core.api.IEditingContext;
 import org.eclipse.sirius.web.core.api.IObjectService;
+import org.eclipse.sirius.web.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.web.diagrams.Diagram;
 import org.eclipse.sirius.web.diagrams.Node;
 import org.eclipse.sirius.web.diagrams.Position;
@@ -51,8 +52,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 @Service
 public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler {
 
-    private static final String SELECTED_OBJECT = "selectedObject"; //$NON-NLS-1$
-
     private final IObjectService objectService;
 
     private final IDiagramQueryService diagramQueryService;
@@ -63,8 +62,10 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
 
     private final Counter counter;
 
+    private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
+
     public InvokeNodeToolOnDiagramEventHandler(IObjectService objectService, IDiagramQueryService diagramQueryService, IToolService toolService, ICollaborativeDiagramMessageService messageService,
-            MeterRegistry meterRegistry) {
+            MeterRegistry meterRegistry, IRepresentationDescriptionSearchService representationDescriptionSearchService) {
         this.objectService = Objects.requireNonNull(objectService);
         this.diagramQueryService = Objects.requireNonNull(diagramQueryService);
         this.toolService = Objects.requireNonNull(toolService);
@@ -75,6 +76,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
                 .tag(Monitoring.NAME, this.getClass().getSimpleName())
                 .register(meterRegistry);
         // @formatter:on
+
+        this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
     }
 
     @Override
@@ -124,17 +127,21 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
             variableManager.put(IDiagramContext.DIAGRAM_CONTEXT, diagramContext);
             variableManager.put(IEditingContext.EDITING_CONTEXT, editingContext);
             variableManager.put(VariableManager.SELF, self.get());
-            if (selectedObjectId != null) {
-                Optional<Object> selectionVariable = this.objectService.getObject(editingContext, selectedObjectId);
-                if (selectionVariable.isPresent()) {
-                    variableManager.put(SELECTED_OBJECT, selectionVariable.get());
+            String selectionDescriptionId = tool.getSelectionDescriptionId();
+            if (selectionDescriptionId != null && selectedObjectId != null) {
+                var selectionDescriptionOpt = this.representationDescriptionSearchService.findById(UUID.fromString(selectionDescriptionId));
+                var selectedObjectOpt = this.objectService.getObject(editingContext, selectedObjectId);
+                if (selectionDescriptionOpt.isPresent() && selectedObjectOpt.isPresent()) {
+                    variableManager.put(VariableManager.SELECTED_OBJECT_IN_SELECTION_REPRESENTATION, selectedObjectOpt.get());
                 }
             }
-            result = tool.getHandler().apply(variableManager);
 
-            Position newPosition = Position.at(startingPositionX, startingPositionY);
+            if (selectionDescriptionId == null || selectedObjectId != null) {
+                result = tool.getHandler().apply(variableManager);
+                Position newPosition = Position.at(startingPositionX, startingPositionY);
 
-            diagramContext.setDiagramEvent(new CreationEvent(newPosition));
+                diagramContext.setDiagramEvent(new CreationEvent(newPosition));
+            }
         }
         return result;
     }
