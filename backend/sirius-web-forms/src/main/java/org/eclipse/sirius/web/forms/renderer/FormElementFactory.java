@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,8 @@ import org.eclipse.sirius.web.forms.elements.RadioElementProps;
 import org.eclipse.sirius.web.forms.elements.SelectElementProps;
 import org.eclipse.sirius.web.forms.elements.TextareaElementProps;
 import org.eclipse.sirius.web.forms.elements.TextfieldElementProps;
+import org.eclipse.sirius.web.forms.validation.Diagnostic;
+import org.eclipse.sirius.web.forms.validation.DiagnosticElementProps;
 
 /**
  * Used to instantiate the elements of the form.
@@ -64,6 +66,8 @@ public class FormElementFactory implements IElementFactory {
             object = this.instantiateTextarea((TextareaElementProps) props, children);
         } else if (TextfieldElementProps.TYPE.equals(type) && props instanceof TextfieldElementProps) {
             object = this.instantiateTextfield((TextfieldElementProps) props, children);
+        } else if (DiagnosticElementProps.TYPE.equals(type) && props instanceof DiagnosticElementProps) {
+            object = this.instantiateDiagnostic((DiagnosticElementProps) props, children);
         }
         return object;
     }
@@ -163,10 +167,25 @@ public class FormElementFactory implements IElementFactory {
 
     private Textfield instantiateTextfield(TextfieldElementProps props, List<Object> children) {
         // @formatter:off
+        List<Diagnostic> diagnostics = children.stream()
+                .filter(Diagnostic.class::isInstance)
+                .map(Diagnostic.class::cast)
+                .collect(Collectors.toList());
+
         return Textfield.newTextfield(props.getId())
                 .label(props.getLabel())
                 .value(props.getValue())
                 .newValueHandler(props.getNewValueHandler())
+                .diagnostics(diagnostics)
+                .build();
+        // @formatter:on
+    }
+
+    private Object instantiateDiagnostic(DiagnosticElementProps props, List<Object> children) {
+        // @formatter:off
+        return Diagnostic.newDiagnostic(props.getId())
+                .kind(props.getKind())
+                .message(props.getMessage())
                 .build();
         // @formatter:on
     }

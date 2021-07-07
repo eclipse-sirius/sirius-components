@@ -25,4 +25,6 @@ public interface IValidationService {
 
     List<Object> validate(IEditingContext editingContext);
 
+    List<Object> validate(Object object, String featureName);
+
 }

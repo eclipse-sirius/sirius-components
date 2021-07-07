@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,8 @@ import org.eclipse.sirius.web.forms.components.TextfieldComponent;
 import org.eclipse.sirius.web.forms.components.TextfieldComponentProps;
 import org.eclipse.sirius.web.forms.components.WidgetComponent;
 import org.eclipse.sirius.web.forms.components.WidgetComponentProps;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 
 /**
  * Used to validate the properties of a component.
@@ -74,6 +76,8 @@ public class FormComponentPropsValidator implements IComponentPropsValidator {
             checkValidProps = props instanceof TextareaComponentProps;
         } else if (TextfieldComponent.class.equals(componentType)) {
             checkValidProps = props instanceof TextfieldComponentProps;
+        } else if (DiagnosticComponent.class.equals(componentType)) {
+            checkValidProps = props instanceof DiagnosticComponentProps;
         }
 
         return checkValidProps;

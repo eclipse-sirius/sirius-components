@@ -61,9 +61,39 @@ public class EMFValidationService implements IValidationService {
             .orElseGet(List::of);
 
         return diagnostics.stream()
-            .map(this::convertToDiagnostic)
+            .map(this::convertToValidationDiagnostic)
             .collect(Collectors.toList());
         // @formatter:on
+    }
+
+    @Override
+    public List<Object> validate(Object object, String featureName) {
+        if (object instanceof EObject) {
+            Diagnostician diagnostician = new Diagnostician(this.eValidatorRegistry);
+            Diagnostic diagnostic = diagnostician.validate((EObject) object);
+            if (Diagnostic.OK != diagnostic.getSeverity()) {
+                // @formatter:off
+                return diagnostic.getChildren().stream()
+                        .filter(diag -> this.filterDiagnosticByFeatureName(diag, featureName))
+                        .map(this::convertToFormDiagnostic)
+                        .collect(Collectors.toList());
+                // @formatter:on
+            }
+        }
+
+        return List.of();
+    }
+
+    private boolean filterDiagnosticByFeatureName(Diagnostic diagnostic, String featureName) {
+        if (diagnostic.getData() != null && !diagnostic.getData().isEmpty() && featureName != null) {
+            // @formatter:off
+            return diagnostic.getData().stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .anyMatch(featureName::equals);
+            // @formatter:on
+        }
+        return false;
     }
 
     private List<Diagnostic> validate(EditingContext editingContext) {
@@ -96,7 +126,29 @@ public class EMFValidationService implements IValidationService {
         // @formatter:on
     }
 
-    private org.eclipse.sirius.web.validation.Diagnostic convertToDiagnostic(Diagnostic diagnostic) {
+    private org.eclipse.sirius.web.validation.Diagnostic convertToValidationDiagnostic(Diagnostic diagnostic) {
+        String kind = this.getKind(diagnostic);
+
+        // @formatter:off
+        return org.eclipse.sirius.web.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
+                .kind(kind)
+                .message(diagnostic.getMessage())
+                .build();
+        // @formatter:on
+    }
+
+    private org.eclipse.sirius.web.forms.validation.Diagnostic convertToFormDiagnostic(Diagnostic diagnostic) {
+        String kind = this.getKind(diagnostic);
+
+     // @formatter:off
+        return org.eclipse.sirius.web.forms.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
+                .kind(kind)
+                .message(diagnostic.getMessage())
+                .build();
+        // @formatter:on
+    }
+
+    private String getKind(Diagnostic diagnostic) {
         String kind = ""; //$NON-NLS-1$
         switch (diagnostic.getSeverity()) {
         case org.eclipse.emf.common.util.Diagnostic.ERROR:
@@ -111,13 +163,7 @@ public class EMFValidationService implements IValidationService {
         default:
             break;
         }
-
-        // @formatter:off
-        return org.eclipse.sirius.web.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
-                .kind(kind)
-                .message(diagnostic.getMessage())
-                .build();
-        // @formatter:on
+        return kind;
     }
 
 }

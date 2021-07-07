@@ -35,6 +35,12 @@ export interface Widget {
   __typename: string;
 }
 
+export interface Diagnostic {
+  id: string;
+  kind: string;
+  message: string;
+}
+
 export interface WidgetSubscription {
   widgetId: string;
   subscribers: Subscriber[];
@@ -43,6 +49,7 @@ export interface WidgetSubscription {
 export interface Textfield extends Widget {
   label: string;
   stringValue: string;
+  diagnostics: Diagnostic[];
 }
 
 export interface Textarea extends Widget {

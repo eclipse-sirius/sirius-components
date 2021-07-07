@@ -23,9 +23,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sirius.web.api.configuration.IPropertiesDescriptionRegistry;
 import org.eclipse.sirius.web.api.configuration.IPropertiesDescriptionRegistryConfigurer;
+import org.eclipse.sirius.web.collaborative.validation.api.IValidationService;
 import org.eclipse.sirius.web.forms.components.SelectComponent;
 import org.eclipse.sirius.web.forms.description.AbstractControlDescription;
 import org.eclipse.sirius.web.forms.description.CheckboxDescription;
@@ -34,12 +36,14 @@ import org.eclipse.sirius.web.forms.description.GroupDescription;
 import org.eclipse.sirius.web.forms.description.PageDescription;
 import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.forms.description.TextfieldDescription;
+import org.eclipse.sirius.web.forms.validation.Diagnostic;
 import org.eclipse.sirius.web.representations.GetOrCreateRandomIdProvider;
 import org.eclipse.sirius.web.representations.IRepresentationDescription;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 import org.eclipse.sirius.web.view.ConditionalNodeStyle;
 import org.eclipse.sirius.web.view.NodeStyle;
+import org.eclipse.sirius.web.view.ViewPackage;
 import org.springframework.stereotype.Component;
 
 /**
@@ -58,7 +62,10 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
 
     private final ICustomImagesService customImagesService;
 
-    public ViewPropertiesConfigurer(ICustomImagesService customImagesService) {
+    private final IValidationService validationService;
+
+    public ViewPropertiesConfigurer(ICustomImagesService customImagesService, IValidationService validationService) {
+        this.validationService = Objects.requireNonNull(validationService);
         this.customImagesService = Objects.requireNonNull(customImagesService);
     }
 
@@ -79,13 +86,16 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         List<AbstractControlDescription> controls = List.of(
                 this.createTextField("conditionalnodestyle.condition", "Condition", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((ConditionalNodeStyle) style).getCondition(),
-                        (style, newCondition) -> ((ConditionalNodeStyle) style).setCondition(newCondition)),
+                        (style, newCondition) -> ((ConditionalNodeStyle) style).setCondition(newCondition),
+                        ViewPackage.Literals.CONDITIONAL__CONDITION.getName()),
                 this.createTextField("conditionalnodestyle.color", "Color", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).getColor(),
-                        (style, newColor) -> ((NodeStyle) style).setColor(newColor)),
+                        (style, newColor) -> ((NodeStyle) style).setColor(newColor),
+                        ViewPackage.Literals.STYLE__COLOR.getName()),
                 this.createTextField("conditionalnodestyle.borderColor", "Border Color", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).getBorderColor(),
-                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor)),
+                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor),
+                        ViewPackage.Literals.STYLE__BORDER_COLOR.getName()),
                 this.createTextField("conditionalnodestyle.borderRadius", "Border Radius", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> String.valueOf(((NodeStyle) style).getBorderRadius()),
                         (style, newBorderRadius) -> {
@@ -94,7 +104,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             } catch (NumberFormatException nfe) {
                                 // Ignore.
                             }
-                        }),
+                        },
+                        ViewPackage.Literals.NODE_STYLE__BORDER_RADIUS.getName()),
                 this.createCheckbox("conditionalnodestyle.listMost", "List Mode", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).isListMode(),
                         (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode)),
@@ -106,7 +117,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             } catch (NumberFormatException nfe) {
                                 // Ignore.
                             }
-                        }),
+                        },
+                        ViewPackage.Literals.STYLE__FONT_SIZE.getName()),
                 this.createShapeSelectionField());
 
         GroupDescription groupDescription = this.createSimpleGroupDescription(controls);
@@ -139,10 +151,10 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         List<AbstractControlDescription> controls = List.of(
                 this.createTextField("nodestyle.color", "Color", //$NON-NLS-1$ //$NON-NLS-2$
                                      style -> ((NodeStyle) style).getColor(),
-                                     (style, newColor) -> ((NodeStyle) style).setColor(newColor)),
+                                     (style, newColor) -> ((NodeStyle) style).setColor(newColor), ViewPackage.Literals.STYLE__COLOR.getName()),
                 this.createTextField("nodestyle.borderColor", "Border Color", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).getBorderColor(),
-                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor)),
+                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor), ViewPackage.Literals.STYLE__BORDER_COLOR.getName()),
                 this.createTextField("nodestyle.borderRadius", "Border Radius", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> String.valueOf(((NodeStyle) style).getBorderRadius()),
                         (style, newBorderRadius) -> {
@@ -151,7 +163,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             } catch (NumberFormatException nfe) {
                                 // Ignore.
                             }
-                        }),
+                        },
+                        ViewPackage.Literals.NODE_STYLE__BORDER_RADIUS.getName()),
                 this.createCheckbox("nodestyle.listMost", "List Mode", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).isListMode(),
                         (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode)),
@@ -163,7 +176,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             } catch (NumberFormatException nfe) {
                                 // Ignore.
                             }
-                        }),
+                        },
+                        ViewPackage.Literals.STYLE__FONT_SIZE.getName()),
                 this.createShapeSelectionField());
 
         GroupDescription groupDescription = this.createSimpleGroupDescription(controls);
@@ -208,7 +222,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         // @formatter:on
     }
 
-    private TextfieldDescription createTextField(String id, String title, Function<Object, String> reader, BiConsumer<Object, String> writer) {
+    private TextfieldDescription createTextField(String id, String title, Function<Object, String> reader, BiConsumer<Object, String> writer, String featureName) {
         Function<VariableManager, String> valueProvider = variableManager -> variableManager.get(VariableManager.SELF, Object.class).map(reader).orElse(EMPTY);
         BiFunction<VariableManager, String, Status> newValueHandler = (variableManager, newValue) -> {
             var optionalDiagramMapping = variableManager.get(VariableManager.SELF, Object.class);
@@ -219,12 +233,16 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                 return Status.ERROR;
             }
         };
+
         // @formatter:off
         return TextfieldDescription.newTextfieldDescription(id)
                                    .idProvider(variableManager -> id)
                                    .labelProvider(variableManager -> title)
                                    .valueProvider(valueProvider)
                                    .newValueHandler(newValueHandler)
+                                   .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                   .kindProvider(this::kindProvider)
+                                   .messageProvider(this::messageProvider)
                                    .build();
         // @formatter:on
     }
@@ -276,6 +294,36 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
             }
             return Status.ERROR;
         };
+    }
+
+    private Function<VariableManager, List<Object>> getDiagnosticsProviders(String featureName) {
+        return variableManager -> {
+            var optionalSelf = variableManager.get(VariableManager.SELF, EObject.class);
+
+            if (optionalSelf.isPresent()) {
+                EObject self = optionalSelf.get();
+                List<Object> validate = this.validationService.validate(self, featureName);
+                return validate;
+            }
+
+            return List.of();
+        };
+    }
+
+    private String kindProvider(Object object) {
+        if (object instanceof Diagnostic) {
+            Diagnostic diagnostic = (Diagnostic) object;
+            return diagnostic.getKind();
+        }
+        return ""; //$NON-NLS-1$
+    }
+
+    private String messageProvider(Object object) {
+        if (object instanceof Diagnostic) {
+            Diagnostic diagnostic = (Diagnostic) object;
+            return diagnostic.getMessage();
+        }
+        return ""; //$NON-NLS-1$
     }
 
 }

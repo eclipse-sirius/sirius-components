@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms.components;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -20,6 +22,8 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.TextfieldDescription;
 import org.eclipse.sirius.web.forms.elements.TextfieldElementProps;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -48,12 +52,19 @@ public class TextfieldComponent implements IComponent {
         Function<String, Status> specializedHandler = newValue -> {
             return genericHandler.apply(variableManager, newValue);
         };
+        List<Element> children = new ArrayList<>();
+        List<Object> diagnostics = textfieldDescription.getDiagnosticsProvider().apply(variableManager);
+        for (Object diagnostic : diagnostics) {
+            var diagnosticComponentProps = new DiagnosticComponentProps(diagnostic, textfieldDescription);
+            children.add(new Element(DiagnosticComponent.class, diagnosticComponentProps));
+        }
 
         // @formatter:off
         TextfieldElementProps textfieldElementProps = TextfieldElementProps.newTextfieldElementProps(id)
                 .label(label)
                 .value(value)
                 .newValueHandler(specializedHandler)
+                .children(children)
                 .build();
         return new Element(TextfieldElementProps.TYPE, textfieldElementProps);
         // @formatter:on
