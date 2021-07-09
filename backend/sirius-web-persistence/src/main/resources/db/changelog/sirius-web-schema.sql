@@ -80,19 +80,6 @@ ALTER TABLE ONLY project
 ALTER TABLE ONLY representation
     ADD CONSTRAINT fk_representation_project_id_id FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE;
 
-CREATE TYPE PublicationStatus AS ENUM (
-    'DRAFT',
-    'PUBLISHED'
-);
- 
-CREATE TABLE Modeler (
-    id UUID DEFAULT gen_random_uuid() NOT NULL,
-    name TEXT NOT NULL,
-    project_id UUID NOT NULL,
-    publicationstatus PublicationStatus DEFAULT 'DRAFT'::PublicationStatus NOT NULL,
-    CONSTRAINT pk_modeler_id PRIMARY KEY (id),
-    CONSTRAINT fk_modeler_project_id_id FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
-);
 
 CREATE TABLE CustomImage (
 	id UUID DEFAULT gen_random_uuid() NOT NULL,

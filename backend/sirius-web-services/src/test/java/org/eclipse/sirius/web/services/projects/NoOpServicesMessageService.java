@@ -34,17 +34,7 @@ public class NoOpServicesMessageService implements IServicesMessageService {
     }
 
     @Override
-    public String invalidModelerName() {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String projectNotFound() {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
-    public String modelerNotFound() {
         return ""; //$NON-NLS-1$
     }
 

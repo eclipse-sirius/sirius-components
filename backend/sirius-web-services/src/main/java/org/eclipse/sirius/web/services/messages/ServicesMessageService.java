@@ -44,18 +44,8 @@ public class ServicesMessageService implements IServicesMessageService {
     }
 
     @Override
-    public String invalidModelerName() {
-        return this.messageSourceAccessor.getMessage("INVALID_MODELER_NAME"); //$NON-NLS-1$
-    }
-
-    @Override
     public String projectNotFound() {
         return this.messageSourceAccessor.getMessage("PROJECT_NOT_FOUND"); //$NON-NLS-1$
-    }
-
-    @Override
-    public String modelerNotFound() {
-        return this.messageSourceAccessor.getMessage("MODELER_NOT_FOUND"); //$NON-NLS-1$
     }
 
     @Override

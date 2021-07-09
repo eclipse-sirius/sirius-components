@@ -25,11 +25,7 @@ public interface IServicesMessageService {
 
     String invalidProjectName();
 
-    String invalidModelerName();
-
     String projectNotFound();
-
-    String modelerNotFound();
 
     String unexpectedError();
 

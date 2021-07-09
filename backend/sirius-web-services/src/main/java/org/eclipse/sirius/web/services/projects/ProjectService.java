@@ -26,14 +26,12 @@ import org.eclipse.sirius.web.persistence.entities.ProjectEntity;
 import org.eclipse.sirius.web.persistence.entities.VisibilityEntity;
 import org.eclipse.sirius.web.persistence.repositories.IAccountRepository;
 import org.eclipse.sirius.web.persistence.repositories.IProjectRepository;
-import org.eclipse.sirius.web.services.api.events.ProjectCreatedEvent;
 import org.eclipse.sirius.web.services.api.projects.CreateProjectInput;
 import org.eclipse.sirius.web.services.api.projects.CreateProjectSuccessPayload;
 import org.eclipse.sirius.web.services.api.projects.IProjectService;
 import org.eclipse.sirius.web.services.api.projects.Project;
 import org.eclipse.sirius.web.services.api.projects.Visibility;
 import org.eclipse.sirius.web.services.messages.IServicesMessageService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,13 +53,10 @@ public class ProjectService implements IProjectService {
 
     private final ProjectMapper projectMapper;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
-    public ProjectService(IServicesMessageService messageService, IProjectRepository projectRepository, IAccountRepository accountRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public ProjectService(IServicesMessageService messageService, IProjectRepository projectRepository, IAccountRepository accountRepository) {
         this.messageService = Objects.requireNonNull(messageService);
         this.projectRepository = Objects.requireNonNull(projectRepository);
         this.accountRepository = Objects.requireNonNull(accountRepository);
-        this.applicationEventPublisher = Objects.requireNonNull(applicationEventPublisher);
         this.projectMapper = new ProjectMapper();
     }
 
@@ -97,7 +92,6 @@ public class ProjectService implements IProjectService {
             if (!optionalOwner.isEmpty()) {
                 ProjectEntity projectEntity = this.createProjectEntity(name, optionalOwner.get(), input.getVisibility());
                 projectEntity = this.projectRepository.save(projectEntity);
-                this.applicationEventPublisher.publishEvent(new ProjectCreatedEvent(projectEntity.getId()));
 
                 Project project = this.projectMapper.toDTO(projectEntity);
                 payload = new CreateProjectSuccessPayload(input.getId(), project);

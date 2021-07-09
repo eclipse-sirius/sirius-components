@@ -30,7 +30,6 @@ import org.eclipse.sirius.web.services.api.projects.CreateProjectSuccessPayload;
 import org.eclipse.sirius.web.services.api.projects.Visibility;
 import org.eclipse.sirius.web.services.messages.IServicesMessageService;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -70,9 +69,7 @@ public class ProjectServiceTests {
         }
     };
 
-    private ApplicationEventPublisher noOpApplicationEventPublisher = new NoOpApplicationEventPublisher();
-
-    private ProjectService projectService = new ProjectService(this.noOpMessageService, this.noOpProjectRepository, this.fakeAccountRepository, this.noOpApplicationEventPublisher);
+    private ProjectService projectService = new ProjectService(this.noOpMessageService, this.noOpProjectRepository, this.fakeAccountRepository);
 
     @Test
     public void testProjectCreationWithInvalidName() {
