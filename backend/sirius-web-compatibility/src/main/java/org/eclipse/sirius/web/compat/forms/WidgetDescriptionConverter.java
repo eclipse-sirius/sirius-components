@@ -128,6 +128,9 @@ public class WidgetDescriptionConverter {
                 .labelProvider(labelProvider)
                 .valueProvider(valueProvider)
                 .newValueHandler(newValueHandler)
+                .diagnosticsProviders((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
 
@@ -203,6 +206,9 @@ public class WidgetDescriptionConverter {
                 .optionSelectedProvider(optionSelectedProvider)
                 .optionsProvider(optionsProvider)
                 .newValueHandler(newValueHandler)
+                .diagnosticsProviders((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
 
@@ -253,6 +259,9 @@ public class WidgetDescriptionConverter {
                 .optionIdProvider(optionIdProvider)
                 .optionLabelProvider(optionLabelProvider)
                 .newValueHandler(newValueHandler)
+                .diagnosticsProviders((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
 
@@ -284,6 +293,9 @@ public class WidgetDescriptionConverter {
                 .labelProvider(labelProvider)
                 .valueProvider(valueProvider)
                 .newValueHandler(newValueHandler)
+                .diagnosticsProviders((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
     }

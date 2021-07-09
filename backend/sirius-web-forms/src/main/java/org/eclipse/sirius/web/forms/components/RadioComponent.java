@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.RadioOption;
 import org.eclipse.sirius.web.forms.description.RadioDescription;
 import org.eclipse.sirius.web.forms.elements.RadioElementProps;
+import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -49,6 +50,7 @@ public class RadioComponent implements IComponent {
         String id = radioDescription.getIdProvider().apply(variableManager);
         String label = radioDescription.getLabelProvider().apply(variableManager);
         List<Object> optionCandidates = radioDescription.getOptionsProvider().apply(variableManager);
+        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(radioDescription, variableManager);
 
         List<RadioOption> options = new ArrayList<>();
         for (Object candidate : optionCandidates) {
@@ -79,6 +81,7 @@ public class RadioComponent implements IComponent {
                 .label(label)
                 .options(options)
                 .newValueHandler(specializedHandler)
+                .children(children)
                 .build();
         return new Element(RadioElementProps.TYPE, radioElementProps);
         // @formatter:on

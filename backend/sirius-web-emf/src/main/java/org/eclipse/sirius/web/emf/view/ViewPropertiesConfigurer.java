@@ -108,7 +108,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                         ViewPackage.Literals.NODE_STYLE__BORDER_RADIUS.getName()),
                 this.createCheckbox("conditionalnodestyle.listMost", "List Mode", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).isListMode(),
-                        (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode)),
+                        (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode),
+                        ViewPackage.Literals.NODE_STYLE__LIST_MODE.getName()),
                 this.createTextField("conditionalnodestyle.fontSize", "Font Size", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> String.valueOf(((NodeStyle) style).getFontSize()),
                         (style, newColor) -> {
@@ -119,7 +120,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             }
                         },
                         ViewPackage.Literals.STYLE__FONT_SIZE.getName()),
-                this.createShapeSelectionField());
+                this.createShapeSelectionField(ViewPackage.Literals.NODE_STYLE__SHAPE.getName()));
 
         GroupDescription groupDescription = this.createSimpleGroupDescription(controls);
         return FormDescription.newFormDescription(formDescriptionId)
@@ -151,10 +152,12 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         List<AbstractControlDescription> controls = List.of(
                 this.createTextField("nodestyle.color", "Color", //$NON-NLS-1$ //$NON-NLS-2$
                                      style -> ((NodeStyle) style).getColor(),
-                                     (style, newColor) -> ((NodeStyle) style).setColor(newColor), ViewPackage.Literals.STYLE__COLOR.getName()),
+                                     (style, newColor) -> ((NodeStyle) style).setColor(newColor),
+                                     ViewPackage.Literals.STYLE__COLOR.getName()),
                 this.createTextField("nodestyle.borderColor", "Border Color", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).getBorderColor(),
-                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor), ViewPackage.Literals.STYLE__BORDER_COLOR.getName()),
+                        (style, newColor) -> ((NodeStyle) style).setBorderColor(newColor),
+                        ViewPackage.Literals.STYLE__BORDER_COLOR.getName()),
                 this.createTextField("nodestyle.borderRadius", "Border Radius", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> String.valueOf(((NodeStyle) style).getBorderRadius()),
                         (style, newBorderRadius) -> {
@@ -167,7 +170,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                         ViewPackage.Literals.NODE_STYLE__BORDER_RADIUS.getName()),
                 this.createCheckbox("nodestyle.listMost", "List Mode", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> ((NodeStyle) style).isListMode(),
-                        (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode)),
+                        (style, newListMode) -> ((NodeStyle) style).setListMode(newListMode),
+                        ViewPackage.Literals.NODE_STYLE__LIST_MODE.getName()),
                 this.createTextField("nodestyle.fontSize", "Font Size", //$NON-NLS-1$ //$NON-NLS-2$
                         style -> String.valueOf(((NodeStyle) style).getFontSize()),
                         (style, newColor) -> {
@@ -178,7 +182,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                             }
                         },
                         ViewPackage.Literals.STYLE__FONT_SIZE.getName()),
-                this.createShapeSelectionField());
+                this.createShapeSelectionField(ViewPackage.Literals.NODE_STYLE__SHAPE.getName()));
 
         GroupDescription groupDescription = this.createSimpleGroupDescription(controls);
         return FormDescription.newFormDescription(formDescriptionId)
@@ -247,7 +251,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         // @formatter:on
     }
 
-    private CheckboxDescription createCheckbox(String id, String title, Function<Object, Boolean> reader, BiConsumer<Object, Boolean> writer) {
+    private CheckboxDescription createCheckbox(String id, String title, Function<Object, Boolean> reader, BiConsumer<Object, Boolean> writer, String featureName) {
         Function<VariableManager, Boolean> valueProvider = variableManager -> variableManager.get(VariableManager.SELF, Object.class).map(reader).orElse(Boolean.FALSE);
         BiFunction<VariableManager, Boolean, Status> newValueHandler = (variableManager, newValue) -> {
             var optionalDiagramMapping = variableManager.get(VariableManager.SELF, Object.class);
@@ -264,11 +268,14 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                                    .labelProvider(variableManager -> title)
                                    .valueProvider(valueProvider)
                                    .newValueHandler(newValueHandler)
+                                   .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                   .kindProvider(this::kindProvider)
+                                   .messageProvider(this::messageProvider)
                                    .build();
         // @formatter:on
     }
 
-    private SelectDescription createShapeSelectionField() {
+    private SelectDescription createShapeSelectionField(String featureName) {
         // @formatter:off
         return SelectDescription.newSelectDescription("nodestyle.shapeSelector") //$NON-NLS-1$
                                 .idProvider(variableManager -> "nodestyle.shapeSelector") //$NON-NLS-1$
@@ -278,6 +285,9 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                                 .optionIdProvider(variableManager -> variableManager.get(SelectComponent.CANDIDATE_VARIABLE, CustomImage.class).map(CustomImage::getId).map(UUID::toString).orElse(EMPTY))
                                 .optionLabelProvider(variableManager -> variableManager.get(SelectComponent.CANDIDATE_VARIABLE, CustomImage.class).map(CustomImage::getLabel).orElse(EMPTY))
                                 .newValueHandler(this.getNewShapeValueHandler())
+                                .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                .kindProvider(this::kindProvider)
+                                .messageProvider(this::messageProvider)
                                 .build();
         // @formatter:on
     }

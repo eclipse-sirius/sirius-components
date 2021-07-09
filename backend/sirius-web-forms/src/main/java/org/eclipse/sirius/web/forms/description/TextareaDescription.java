@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
 package org.eclipse.sirius.web.forms.description;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -84,6 +85,12 @@ public final class TextareaDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, String, Status> newValueHandler;
 
+        private Function<VariableManager, List<Object>> diagnosticsProviders;
+
+        private Function<Object, String> kindProvider;
+
+        private Function<Object, String> messageProvider;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -108,6 +115,21 @@ public final class TextareaDescription extends AbstractWidgetDescription {
             return this;
         }
 
+        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
+            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+            return this;
+        }
+
+        public Builder kindProvider(Function<Object, String> kindProvider) {
+            this.kindProvider = Objects.requireNonNull(kindProvider);
+            return this;
+        }
+
+        public Builder messageProvider(Function<Object, String> messageProvider) {
+            this.messageProvider = Objects.requireNonNull(messageProvider);
+            return this;
+        }
+
         public TextareaDescription build() {
             TextareaDescription textareaDescription = new TextareaDescription();
             textareaDescription.id = Objects.requireNonNull(this.id);
@@ -115,6 +137,9 @@ public final class TextareaDescription extends AbstractWidgetDescription {
             textareaDescription.labelProvider = Objects.requireNonNull(this.labelProvider);
             textareaDescription.valueProvider = Objects.requireNonNull(this.valueProvider);
             textareaDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            textareaDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            textareaDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
+            textareaDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return textareaDescription;
         }
     }

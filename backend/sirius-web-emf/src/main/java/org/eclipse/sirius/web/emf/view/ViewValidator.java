@@ -100,8 +100,7 @@ public class ViewValidator implements EValidator {
     }
 
     private boolean hasProperColor(NodeStyle nodeStyle, DiagnosticChain diagnostics) {
-        // TODO: do not keep pink -> this is an example.
-        boolean isValid = nodeStyle.getColor().equals("pink"); //$NON-NLS-1$
+        boolean isValid = !nodeStyle.getColor().isBlank();
 
         if (!isValid && diagnostics != null) {
             // @formatter:off

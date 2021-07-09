@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms;
 
+import java.util.List;
+
 import org.eclipse.sirius.web.annotations.graphql.GraphQLField;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLID;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLInterfaceType;
@@ -27,7 +29,7 @@ import org.eclipse.sirius.web.forms.validation.Diagnostic;
 public abstract class AbstractWidget {
     protected String id;
 
-    protected java.util.List<Diagnostic> diagnostics;
+    protected List<Diagnostic> diagnostics;
 
     @GraphQLID
     @GraphQLField
@@ -38,7 +40,7 @@ public abstract class AbstractWidget {
 
     @GraphQLField
     @GraphQLNonNull
-    public java.util.List<@GraphQLNonNull Diagnostic> getDiagnostics() {
+    public List<@GraphQLNonNull Diagnostic> getDiagnostics() {
         return this.diagnostics;
     }
 }

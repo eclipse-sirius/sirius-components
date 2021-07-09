@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms.components;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.CheckboxDescription;
 import org.eclipse.sirius.web.forms.elements.CheckboxElementProps;
+import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -47,11 +49,14 @@ public class CheckboxComponent implements IComponent {
         BiFunction<VariableManager, Boolean, Status> genericHandler = checkboxDescription.getNewValueHandler();
         Function<Boolean, Status> specializedHandler = newValue -> genericHandler.apply(variableManager, newValue);
 
+        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(checkboxDescription, variableManager);
+
         // @formatter:off
         CheckboxElementProps checkboxElementProps = CheckboxElementProps.newCheckboxElementProps(id)
                 .label(label)
                 .value(value.booleanValue())
                 .newValueHandler(specializedHandler)
+                .children(children)
                 .build();
         return new Element(CheckboxElementProps.TYPE, checkboxElementProps);
         // @formatter:on

@@ -21,6 +21,7 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.ListItem;
 import org.eclipse.sirius.web.forms.description.ListDescription;
 import org.eclipse.sirius.web.forms.elements.ListElementProps;
+import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
 import org.eclipse.sirius.web.representations.VariableManager;
 
 /**
@@ -47,6 +48,8 @@ public class ListComponent implements IComponent {
         String label = listDescription.getLabelProvider().apply(variableManager);
         List<Object> itemCandidates = listDescription.getItemsProvider().apply(variableManager);
 
+        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(listDescription, variableManager);
+
         List<ListItem> items = new ArrayList<>();
         for (Object itemCandidate : itemCandidates) {
             VariableManager itemVariableManager = variableManager.createChild();
@@ -70,6 +73,7 @@ public class ListComponent implements IComponent {
         ListElementProps listElementProps = ListElementProps.newListElementProps(id)
                 .label(label)
                 .items(items)
+                .children(children)
                 .build();
         // @formatter:on
 

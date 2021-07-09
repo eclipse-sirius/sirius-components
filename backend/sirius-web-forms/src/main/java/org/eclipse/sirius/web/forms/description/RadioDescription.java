@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -109,6 +109,12 @@ public final class RadioDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, String, Status> newValueHandler;
 
+        private Function<VariableManager, List<Object>> diagnosticsProviders;
+
+        private Function<Object, String> kindProvider;
+
+        private Function<Object, String> messageProvider;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -148,6 +154,21 @@ public final class RadioDescription extends AbstractWidgetDescription {
             return this;
         }
 
+        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
+            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+            return this;
+        }
+
+        public Builder kindProvider(Function<Object, String> kindProvider) {
+            this.kindProvider = Objects.requireNonNull(kindProvider);
+            return this;
+        }
+
+        public Builder messageProvider(Function<Object, String> messageProvider) {
+            this.messageProvider = Objects.requireNonNull(messageProvider);
+            return this;
+        }
+
         public RadioDescription build() {
             RadioDescription radioDescription = new RadioDescription();
             radioDescription.id = Objects.requireNonNull(this.id);
@@ -158,6 +179,9 @@ public final class RadioDescription extends AbstractWidgetDescription {
             radioDescription.optionLabelProvider = Objects.requireNonNull(this.optionLabelProvider);
             radioDescription.optionSelectedProvider = Objects.requireNonNull(this.optionSelectedProvider);
             radioDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            radioDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            radioDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
+            radioDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return radioDescription;
         }
 
