@@ -16,4 +16,5 @@ export interface ListPropertySectionProps {
   widget: List;
   subscribers: Subscriber[];
   readonly: boolean;
+  hasDiagnostic: boolean;
 }

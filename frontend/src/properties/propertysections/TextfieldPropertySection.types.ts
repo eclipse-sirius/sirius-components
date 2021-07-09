@@ -18,6 +18,7 @@ export interface TextfieldPropertySectionProps {
   widget: Textfield | Textarea;
   subscribers: Subscriber[];
   readOnly: boolean;
+  hasDiagnostic: boolean;
 }
 
 export interface GQLEditTextfieldMutationData {

@@ -18,6 +18,7 @@ export interface RadioPropertySectionProps {
   widget: Radio;
   subscribers: Subscriber[];
   readOnly: boolean;
+  hasDiagnostic: boolean;
 }
 
 export interface GQLEditRadioMutationData {

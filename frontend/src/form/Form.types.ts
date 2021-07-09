@@ -33,6 +33,7 @@ export interface Group {
 export interface Widget {
   id: string;
   __typename: string;
+  diagnostics: Diagnostic[];
 }
 
 export interface Diagnostic {
@@ -49,7 +50,6 @@ export interface WidgetSubscription {
 export interface Textfield extends Widget {
   label: string;
   stringValue: string;
-  diagnostics: Diagnostic[];
 }
 
 export interface Textarea extends Widget {

@@ -69,6 +69,13 @@ export interface GQLGroup {
 export interface GQLWidget {
   id: string;
   __typename: string;
+  diagnostics: GQLDiagnostic[];
+}
+
+export interface GQLDiagnostic {
+  id: string;
+  kind: string;
+  message: string;
 }
 
 export interface GQLTextfield extends GQLWidget {

@@ -107,7 +107,7 @@ public class ViewValidator implements EValidator {
             BasicDiagnostic basicDiagnostic = new BasicDiagnostic(Diagnostic.ERROR,
                     SIRIUS_WEB_EMF_PACKAGE,
                     0,
-                    "The color should be \"pink\"", //$NON-NLS-1$
+                    "The color should not be empty", //$NON-NLS-1$
                     new Object [] {
                             ViewPackage.Literals.STYLE__COLOR.getName(),
                     });

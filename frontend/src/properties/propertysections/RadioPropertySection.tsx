@@ -11,6 +11,8 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { useMutation } from '@apollo/client';
+import { FormHelperText } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Radio from '@material-ui/core/Radio';
@@ -68,6 +70,7 @@ export const RadioPropertySection = ({
   widget,
   subscribers,
   readOnly,
+  hasDiagnostic,
 }: RadioPropertySectionProps) => {
   const classes = useRadioPropertySectionStyles();
   const [message, setMessage] = useState(null);
@@ -139,7 +142,7 @@ export const RadioPropertySection = ({
 
   const selectedOption = widget.options.find((option) => option.selected);
   return (
-    <div>
+    <FormControl error={hasDiagnostic}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <RadioGroup
         classes={{ root: classes.radioGroupRoot }}
@@ -157,6 +160,7 @@ export const RadioPropertySection = ({
           />
         ))}
       </RadioGroup>
+      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -173,6 +177,6 @@ export const RadioPropertySection = ({
         }
         data-testid="error"
       />
-    </div>
+    </FormControl>
   );
 };

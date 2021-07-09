@@ -10,6 +10,8 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
+import { FormHelperText } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -38,7 +40,7 @@ const useListPropertySectionStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ListPropertySection = ({ widget, subscribers }: ListPropertySectionProps) => {
+export const ListPropertySection = ({ widget, subscribers, hasDiagnostic }: ListPropertySectionProps) => {
   const classes = useListPropertySectionStyles();
 
   let items = widget.items;
@@ -51,7 +53,7 @@ export const ListPropertySection = ({ widget, subscribers }: ListPropertySection
   }
 
   return (
-    <div>
+    <FormControl error={hasDiagnostic}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <Table className={classes.table}>
         <TableBody>
@@ -73,6 +75,7 @@ export const ListPropertySection = ({ widget, subscribers }: ListPropertySection
           ))}
         </TableBody>
       </Table>
-    </div>
+      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
+    </FormControl>
   );
 };

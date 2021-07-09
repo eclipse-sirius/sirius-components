@@ -16,7 +16,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import { useMachine } from '@xstate/react';
-import { Textarea, Textfield, Widget } from 'form/Form.types';
+import { Textarea, Widget } from 'form/Form.types';
 import gql from 'graphql-tag';
 import { PropertySectionLabel } from 'properties/propertysections/PropertySectionLabel';
 import {
@@ -64,7 +64,6 @@ const updateWidgetFocusMutation = gql`
 const isTextarea = (widget: Widget): widget is Textarea => widget.__typename === 'Textarea';
 const isErrorPayload = (payload: GQLEditTextfieldPayload | GQLUpdateWidgetFocusPayload): payload is GQLErrorPayload =>
   payload.__typename === 'ErrorPayload';
-const hasDiagnostic = (textfield: Textfield) => textfield.diagnostics.length > 0;
 
 /**
  * Defines the content of a Textfield property section.
@@ -76,6 +75,7 @@ export const TextfieldPropertySection = ({
   widget,
   subscribers,
   readOnly,
+  hasDiagnostic,
 }: TextfieldPropertySectionProps) => {
   const [{ value: schemaValue, context }, dispatch] = useMachine<
     TextfieldPropertySectionContext,
@@ -208,8 +208,8 @@ export const TextfieldPropertySection = ({
         onKeyPress={onKeyPress}
         data-testid={widget.label}
         disabled={readOnly}
-        error={!isTextarea(widget) && hasDiagnostic(widget)}
-        helperText={!isTextarea(widget) && hasDiagnostic(widget) ? (widget as Textfield).diagnostics[0].message : null}
+        error={hasDiagnostic}
+        helperText={hasDiagnostic ? widget.diagnostics[0].message : null}
       />
       <Snackbar
         anchorOrigin={{
