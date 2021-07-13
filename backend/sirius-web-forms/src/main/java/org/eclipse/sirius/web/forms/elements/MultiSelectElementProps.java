@@ -1,0 +1,132 @@
+/*******************************************************************************
+ * Copyright (c) 2021 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.sirius.web.forms.elements;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import org.eclipse.sirius.web.annotations.Immutable;
+import org.eclipse.sirius.web.components.IProps;
+import org.eclipse.sirius.web.forms.SelectOption;
+import org.eclipse.sirius.web.representations.Status;
+
+/**
+ * The properties of the multi-select element.
+ *
+ * @author pcdavid
+ * @author arichard
+ */
+@Immutable
+public final class MultiSelectElementProps implements IProps {
+    public static final String TYPE = "MultiSelect"; //$NON-NLS-1$
+
+    private String id;
+
+    private String label;
+
+    private List<SelectOption> options;
+
+    private List<String> values;
+
+    private Function<List<String>, Status> newValuesHandler;
+
+    private MultiSelectElementProps() {
+        // Prevent instantiation
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public List<SelectOption> getOptions() {
+        return this.options;
+    }
+
+    public List<String> getValues() {
+        return this.values;
+    }
+
+    public Function<List<String>, Status> getNewValuesHandler() {
+        return this.newValuesHandler;
+    }
+
+    public static Builder newMultiSelectElementProps(String id) {
+        return new Builder(id);
+    }
+
+    @Override
+    public String toString() {
+        String pattern = "{0} '{'id: {1}, label: {2}, value: {3}, options:{4}'}'"; //$NON-NLS-1$
+        return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.id, this.label, this.values, this.options);
+    }
+
+    /**
+     * The builder of the select element props.
+     *
+     * @author lfasani
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
+    public static final class Builder {
+
+        private String id;
+
+        private String label;
+
+        private List<SelectOption> options;
+
+        private List<String> values = new ArrayList<>();
+
+        private Function<List<String>, Status> newValuesHandler;
+
+        private Builder(String id) {
+            this.id = Objects.requireNonNull(id);
+        }
+
+        public Builder label(String label) {
+            this.label = Objects.requireNonNull(label);
+            return this;
+        }
+
+        public Builder options(List<SelectOption> options) {
+            this.options = Objects.requireNonNull(options);
+            return this;
+        }
+
+        public Builder values(List<String> values) {
+            this.values = values;
+            return this;
+        }
+
+        public Builder newValuesHandler(Function<List<String>, Status> newValuesHandler) {
+            this.newValuesHandler = Objects.requireNonNull(newValuesHandler);
+            return this;
+        }
+
+        public MultiSelectElementProps build() {
+            MultiSelectElementProps selectElementProps = new MultiSelectElementProps();
+            selectElementProps.id = Objects.requireNonNull(this.id);
+            selectElementProps.label = Objects.requireNonNull(this.label);
+            selectElementProps.options = Objects.requireNonNull(this.options);
+            selectElementProps.values = List.copyOf(this.values);
+            selectElementProps.newValuesHandler = Objects.requireNonNull(this.newValuesHandler);
+            return selectElementProps;
+        }
+    }
+}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ import org.eclipse.sirius.web.forms.AbstractWidget;
 import org.eclipse.sirius.web.forms.Checkbox;
 import org.eclipse.sirius.web.forms.Form;
 import org.eclipse.sirius.web.forms.Group;
+import org.eclipse.sirius.web.forms.MultiSelect;
 import org.eclipse.sirius.web.forms.Page;
 import org.eclipse.sirius.web.forms.Radio;
 import org.eclipse.sirius.web.forms.Select;
@@ -30,6 +31,7 @@ import org.eclipse.sirius.web.forms.elements.CheckboxElementProps;
 import org.eclipse.sirius.web.forms.elements.FormElementProps;
 import org.eclipse.sirius.web.forms.elements.GroupElementProps;
 import org.eclipse.sirius.web.forms.elements.ListElementProps;
+import org.eclipse.sirius.web.forms.elements.MultiSelectElementProps;
 import org.eclipse.sirius.web.forms.elements.PageElementProps;
 import org.eclipse.sirius.web.forms.elements.RadioElementProps;
 import org.eclipse.sirius.web.forms.elements.SelectElementProps;
@@ -60,6 +62,8 @@ public class FormElementFactory implements IElementFactory {
             object = this.instantiateRadio((RadioElementProps) props, children);
         } else if (SelectElementProps.TYPE.equals(type) && props instanceof SelectElementProps) {
             object = this.instantiateSelect((SelectElementProps) props, children);
+        } else if (MultiSelectElementProps.TYPE.equals(type) && props instanceof MultiSelectElementProps) {
+            object = this.instantiateMultiSelect((MultiSelectElementProps) props, children);
         } else if (TextareaElementProps.TYPE.equals(type) && props instanceof TextareaElementProps) {
             object = this.instantiateTextarea((TextareaElementProps) props, children);
         } else if (TextfieldElementProps.TYPE.equals(type) && props instanceof TextfieldElementProps) {
@@ -148,6 +152,17 @@ public class FormElementFactory implements IElementFactory {
                 .options(props.getOptions())
                 .value(props.getValue())
                 .newValueHandler(props.getNewValueHandler())
+                .build();
+        // @formatter:on
+    }
+
+    private MultiSelect instantiateMultiSelect(MultiSelectElementProps props, List<Object> children) {
+        // @formatter:off
+        return MultiSelect.newMultiSelect(props.getId())
+                .label(props.getLabel())
+                .options(props.getOptions())
+                .values(props.getValues())
+                .newValuesHandler(props.getNewValuesHandler())
                 .build();
         // @formatter:on
     }

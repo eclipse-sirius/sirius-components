@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.eclipse.sirius.web.forms.Checkbox;
 import org.eclipse.sirius.web.forms.Form;
 import org.eclipse.sirius.web.forms.Group;
 import org.eclipse.sirius.web.forms.ListItem;
+import org.eclipse.sirius.web.forms.MultiSelect;
 import org.eclipse.sirius.web.forms.Page;
 import org.eclipse.sirius.web.forms.Radio;
 import org.eclipse.sirius.web.forms.RadioOption;
@@ -57,6 +58,8 @@ public class FormTypesProvider implements ITypeProvider {
 
     public static final String SELECT_TYPE = "Select"; //$NON-NLS-1$
 
+    public static final String MULTI_SELECT_TYPE = "MultiSelect"; //$NON-NLS-1$
+
     public static final String RADIO_TYPE = "Radio"; //$NON-NLS-1$
 
     private final GraphQLObjectTypeProvider graphQLObjectTypeProvider = new GraphQLObjectTypeProvider();
@@ -76,6 +79,7 @@ public class FormTypesProvider implements ITypeProvider {
             Radio.class,
             RadioOption.class,
             Select.class,
+            MultiSelect.class,
             SelectOption.class,
             org.eclipse.sirius.web.forms.List.class,
             ListItem.class,

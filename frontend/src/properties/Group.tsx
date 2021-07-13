@@ -12,10 +12,21 @@
  *******************************************************************************/
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Checkbox, List, Radio, Select, Textarea, Textfield, Widget, WidgetSubscription } from 'form/Form.types';
+import {
+  Checkbox,
+  List,
+  MultiSelect,
+  Radio,
+  Select,
+  Textarea,
+  Textfield,
+  Widget,
+  WidgetSubscription,
+} from 'form/Form.types';
 import { GroupProps } from 'properties/Group.types';
 import { CheckboxPropertySection } from 'properties/propertysections/CheckboxPropertySection';
 import { ListPropertySection } from 'properties/propertysections/ListPropertySection';
+import { MultiSelectPropertySection } from 'properties/propertysections/MultiSelectPropertySection';
 import { RadioPropertySection } from 'properties/propertysections/RadioPropertySection';
 import { SelectPropertySection } from 'properties/propertysections/SelectPropertySection';
 import { TextfieldPropertySection } from 'properties/propertysections/TextfieldPropertySection';
@@ -61,6 +72,7 @@ const isTextfield = (widget: Widget): widget is Textfield => widget.__typename =
 const isTextarea = (widget: Widget): widget is Textarea => widget.__typename === 'Textarea';
 const isCheckbox = (widget: Widget): widget is Checkbox => widget.__typename === 'Checkbox';
 const isSelect = (widget: Widget): widget is Select => widget.__typename === 'Select';
+const isMultiSelect = (widget: Widget): widget is MultiSelect => widget.__typename === 'MultiSelect';
 const isRadio = (widget: Widget): widget is Radio => widget.__typename === 'Radio';
 const isList = (widget: Widget): widget is List => widget.__typename === 'List';
 
@@ -102,6 +114,17 @@ const widgetToPropertySection = (
   } else if (isSelect(widget)) {
     propertySection = (
       <SelectPropertySection
+        editingContextId={editingContextId}
+        formId={formId}
+        widget={widget}
+        subscribers={subscribers}
+        key={widget.id}
+        readOnly={readOnly}
+      />
+    );
+  } else if (isMultiSelect(widget)) {
+    propertySection = (
+      <MultiSelectPropertySection
         editingContextId={editingContextId}
         formId={formId}
         widget={widget}
