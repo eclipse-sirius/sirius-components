@@ -89,7 +89,8 @@ public class ViewValidator implements EValidator {
                     0,
                     "The condition should not be empty", //$NON-NLS-1$
                     new Object [] {
-                            ViewPackage.Literals.CONDITIONAL__CONDITION.getName(),
+                            conditional,
+                            ViewPackage.Literals.CONDITIONAL__CONDITION,
                     });
             // @formatter:on
 
@@ -109,7 +110,8 @@ public class ViewValidator implements EValidator {
                     0,
                     "The color should not be empty", //$NON-NLS-1$
                     new Object [] {
-                            ViewPackage.Literals.STYLE__COLOR.getName(),
+                            nodeStyle,
+                            ViewPackage.Literals.STYLE__COLOR,
                     });
             // @formatter:on
 
@@ -147,7 +149,8 @@ public class ViewValidator implements EValidator {
                     0,
                     String.format(NODE_DESCRIPTION_INVALID_DOMAIN_TYPE_ERROR_MESSAGE, nodeDescription.getDomainType()),
                     new Object [] {
-                            ViewPackage.Literals.DIAGRAM_ELEMENT_DESCRIPTION__DOMAIN_TYPE.getName(),
+                            nodeDescription,
+                            ViewPackage.Literals.DIAGRAM_ELEMENT_DESCRIPTION__DOMAIN_TYPE,
                     });
             // @formatter:on
 

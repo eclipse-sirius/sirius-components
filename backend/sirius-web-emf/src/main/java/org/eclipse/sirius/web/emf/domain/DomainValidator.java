@@ -65,7 +65,8 @@ public class DomainValidator implements EValidator {
                     0,
                     String.format(DOMAIN_URI_SCHEME_ERROR_MESSAGE, domain.getName()),
                     new Object [] {
-                            DomainPackage.Literals.DOMAIN__URI.getName(),
+                            domain,
+                            DomainPackage.Literals.DOMAIN__URI,
                     });
             // @formatter:on
 
@@ -84,7 +85,8 @@ public class DomainValidator implements EValidator {
                     0,
                     DOMAIN_NAME_ERROR_MESSAGE,
                     new Object [] {
-                            DomainPackage.Literals.NAMED_ELEMENT__NAME.getName(),
+                            domain,
+                            DomainPackage.Literals.NAMED_ELEMENT__NAME,
                     });
             // @formatter:on
 

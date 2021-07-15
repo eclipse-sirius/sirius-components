@@ -62,14 +62,14 @@ public class EMFValidationService implements IValidationService {
     }
 
     @Override
-    public List<Object> validate(Object object, String featureName) {
+    public List<Object> validate(Object object, Object feature) {
         if (object instanceof EObject) {
             Diagnostician diagnostician = this.getNewDiagnostician();
             Diagnostic diagnostic = diagnostician.validate((EObject) object);
             if (Diagnostic.OK != diagnostic.getSeverity()) {
                 // @formatter:off
                 return diagnostic.getChildren().stream()
-                        .filter(diag -> this.filterDiagnosticByFeatureName(diag, featureName))
+                        .filter(diag -> this.filterDiagnosticByFeatureName(diag, feature))
                         .collect(Collectors.toList());
                 // @formatter:on
             }
@@ -78,13 +78,11 @@ public class EMFValidationService implements IValidationService {
         return List.of();
     }
 
-    private boolean filterDiagnosticByFeatureName(Diagnostic diagnostic, String featureName) {
-        if (diagnostic.getData() != null && !diagnostic.getData().isEmpty() && featureName != null) {
+    private boolean filterDiagnosticByFeatureName(Diagnostic diagnostic, Object feature) {
+        if (diagnostic.getData() != null && !diagnostic.getData().isEmpty() && feature != null) {
             // @formatter:off
             return diagnostic.getData().stream()
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .anyMatch(featureName::equals);
+                    .anyMatch(feature::equals);
             // @formatter:on
         }
         return false;
@@ -123,23 +121,4 @@ public class EMFValidationService implements IValidationService {
             }
         };
     }
-
-    private String getKind(Diagnostic diagnostic) {
-        String kind = ""; //$NON-NLS-1$
-        switch (diagnostic.getSeverity()) {
-        case org.eclipse.emf.common.util.Diagnostic.ERROR:
-            kind = "Error"; //$NON-NLS-1$
-            break;
-        case org.eclipse.emf.common.util.Diagnostic.WARNING:
-            kind = "Warning"; //$NON-NLS-1$
-            break;
-        case org.eclipse.emf.common.util.Diagnostic.INFO:
-            kind = "Info"; //$NON-NLS-1$
-            break;
-        default:
-            break;
-        }
-        return kind;
-    }
-
 }
