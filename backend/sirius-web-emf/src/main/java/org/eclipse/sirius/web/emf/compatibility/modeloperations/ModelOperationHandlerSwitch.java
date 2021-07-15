@@ -21,6 +21,7 @@ import org.eclipse.sirius.diagram.description.tool.Navigation;
 import org.eclipse.sirius.viewpoint.description.tool.ChangeContext;
 import org.eclipse.sirius.viewpoint.description.tool.CreateInstance;
 import org.eclipse.sirius.viewpoint.description.tool.DeleteView;
+import org.eclipse.sirius.viewpoint.description.tool.ExternalJavaAction;
 import org.eclipse.sirius.viewpoint.description.tool.For;
 import org.eclipse.sirius.viewpoint.description.tool.If;
 import org.eclipse.sirius.viewpoint.description.tool.Let;
@@ -86,6 +87,8 @@ public class ModelOperationHandlerSwitch implements Function<ModelOperation, Opt
             optionalModelOperationHandler = this.caseUnset((Unset) modelOperation);
         } else if (modelOperation instanceof Switch) {
             optionalModelOperationHandler = this.caseSwitch((Switch) modelOperation);
+        } else if (modelOperation instanceof ExternalJavaAction) {
+            optionalModelOperationHandler = this.caseExternalJavaAction((ExternalJavaAction) modelOperation);
         }
 
         if (optionalModelOperationHandler.isEmpty()) {
@@ -150,6 +153,10 @@ public class ModelOperationHandlerSwitch implements Function<ModelOperation, Opt
 
     private Optional<IModelOperationHandler> caseSwitch(Switch switchOperation) {
         return Optional.of(new SwitchOperationHandler(this.interpreter, this.childModelOperationHandler, switchOperation));
+    }
+
+    private Optional<IModelOperationHandler> caseExternalJavaAction(ExternalJavaAction externalJavaAction) {
+        return Optional.of(new ExternalJavaActionOperationHandler(this.interpreter, this.childModelOperationHandler, externalJavaAction));
     }
 
 }

@@ -75,3 +75,10 @@ node_modules/
 .cache
 
 .attach_pid*
+
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
