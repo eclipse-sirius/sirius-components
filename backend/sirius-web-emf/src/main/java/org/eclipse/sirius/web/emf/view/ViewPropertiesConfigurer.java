@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sirius.web.api.configuration.IPropertiesDescriptionRegistry;
@@ -36,7 +37,6 @@ import org.eclipse.sirius.web.forms.description.GroupDescription;
 import org.eclipse.sirius.web.forms.description.PageDescription;
 import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.forms.description.TextfieldDescription;
-import org.eclipse.sirius.web.forms.validation.Diagnostic;
 import org.eclipse.sirius.web.representations.GetOrCreateRandomIdProvider;
 import org.eclipse.sirius.web.representations.IRepresentationDescription;
 import org.eclipse.sirius.web.representations.Status;
@@ -244,7 +244,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                                    .labelProvider(variableManager -> title)
                                    .valueProvider(valueProvider)
                                    .newValueHandler(newValueHandler)
-                                   .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                   .diagnosticsProvider(this.getDiagnosticsProvider(featureName))
                                    .kindProvider(this::kindProvider)
                                    .messageProvider(this::messageProvider)
                                    .build();
@@ -268,7 +268,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                                    .labelProvider(variableManager -> title)
                                    .valueProvider(valueProvider)
                                    .newValueHandler(newValueHandler)
-                                   .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                   .diagnosticsProvider(this.getDiagnosticsProvider(featureName))
                                    .kindProvider(this::kindProvider)
                                    .messageProvider(this::messageProvider)
                                    .build();
@@ -285,7 +285,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
                                 .optionIdProvider(variableManager -> variableManager.get(SelectComponent.CANDIDATE_VARIABLE, CustomImage.class).map(CustomImage::getId).map(UUID::toString).orElse(EMPTY))
                                 .optionLabelProvider(variableManager -> variableManager.get(SelectComponent.CANDIDATE_VARIABLE, CustomImage.class).map(CustomImage::getLabel).orElse(EMPTY))
                                 .newValueHandler(this.getNewShapeValueHandler())
-                                .diagnosticsProviders(this.getDiagnosticsProviders(featureName))
+                                .diagnosticsProvider(this.getDiagnosticsProvider(featureName))
                                 .kindProvider(this::kindProvider)
                                 .messageProvider(this::messageProvider)
                                 .build();
@@ -306,7 +306,7 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
         };
     }
 
-    private Function<VariableManager, List<Object>> getDiagnosticsProviders(String featureName) {
+    private Function<VariableManager, List<Object>> getDiagnosticsProvider(String featureName) {
         return variableManager -> {
             var optionalSelf = variableManager.get(VariableManager.SELF, EObject.class);
 
@@ -321,11 +321,25 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
     }
 
     private String kindProvider(Object object) {
+        String kind = "Unknown"; //$NON-NLS-1$
         if (object instanceof Diagnostic) {
             Diagnostic diagnostic = (Diagnostic) object;
-            return diagnostic.getKind();
+            switch (diagnostic.getSeverity()) {
+            case org.eclipse.emf.common.util.Diagnostic.ERROR:
+                kind = "Error"; //$NON-NLS-1$
+                break;
+            case org.eclipse.emf.common.util.Diagnostic.WARNING:
+                kind = "Warning"; //$NON-NLS-1$
+                break;
+            case org.eclipse.emf.common.util.Diagnostic.INFO:
+                kind = "Info"; //$NON-NLS-1$
+                break;
+            default:
+                kind = "Unknown"; //$NON-NLS-1$
+                break;
+            }
         }
-        return ""; //$NON-NLS-1$
+        return kind;
     }
 
     private String messageProvider(Object object) {

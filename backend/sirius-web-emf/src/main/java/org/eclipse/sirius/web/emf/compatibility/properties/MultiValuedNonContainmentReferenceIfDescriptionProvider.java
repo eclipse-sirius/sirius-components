@@ -79,7 +79,7 @@ public class MultiValuedNonContainmentReferenceIfDescriptionProvider {
                 .itemIdProvider(this.getItemIdProvider())
                 .itemLabelProvider(this.getItemLabelProvider())
                 .itemImageURLProvider(this.getImageURLProvider())
-                .diagnosticsProviders((variableManager) -> List.of())
+                .diagnosticsProvider((variableManager) -> List.of())
                 .kindProvider((object) -> "") //$NON-NLS-1$
                 .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();

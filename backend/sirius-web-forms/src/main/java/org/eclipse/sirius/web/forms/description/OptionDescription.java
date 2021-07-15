@@ -72,7 +72,7 @@ public final class OptionDescription extends AbstractWidgetDescription {
 
         private Function<VariableManager, Boolean> selectedProvider;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -92,8 +92,8 @@ public final class OptionDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -112,7 +112,7 @@ public final class OptionDescription extends AbstractWidgetDescription {
             optionDescription.id = Objects.requireNonNull(this.id);
             optionDescription.labelProvider = Objects.requireNonNull(this.labelProvider);
             optionDescription.selectedProvider = Objects.requireNonNull(this.selectedProvider);
-            optionDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            optionDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             optionDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             optionDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return optionDescription;

@@ -67,7 +67,7 @@ public class EBooleanIfDescriptionProvider {
                 .labelProvider(this.getLabelProvider())
                 .valueProvider(this.getValueProvider())
                 .newValueHandler(this.getNewValueHandler())
-                .diagnosticsProviders((variableManager) -> List.of())
+                .diagnosticsProvider((variableManager) -> List.of())
                 .kindProvider((object) -> "") //$NON-NLS-1$
                 .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();

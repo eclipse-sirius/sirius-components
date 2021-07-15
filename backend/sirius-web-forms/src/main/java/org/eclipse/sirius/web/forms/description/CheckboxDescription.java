@@ -85,7 +85,7 @@ public final class CheckboxDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, Boolean, Status> newValueHandler;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -115,8 +115,8 @@ public final class CheckboxDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -137,7 +137,7 @@ public final class CheckboxDescription extends AbstractWidgetDescription {
             checkboxDescription.labelProvider = Objects.requireNonNull(this.labelProvider);
             checkboxDescription.valueProvider = Objects.requireNonNull(this.valueProvider);
             checkboxDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
-            checkboxDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            checkboxDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             checkboxDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             checkboxDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return checkboxDescription;

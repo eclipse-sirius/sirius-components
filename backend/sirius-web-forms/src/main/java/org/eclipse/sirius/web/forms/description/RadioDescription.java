@@ -109,7 +109,7 @@ public final class RadioDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, String, Status> newValueHandler;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -154,8 +154,8 @@ public final class RadioDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -179,7 +179,7 @@ public final class RadioDescription extends AbstractWidgetDescription {
             radioDescription.optionLabelProvider = Objects.requireNonNull(this.optionLabelProvider);
             radioDescription.optionSelectedProvider = Objects.requireNonNull(this.optionSelectedProvider);
             radioDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
-            radioDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            radioDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             radioDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             radioDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return radioDescription;

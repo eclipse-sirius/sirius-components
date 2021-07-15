@@ -24,14 +24,14 @@ import org.eclipse.sirius.web.representations.VariableManager;
  */
 public abstract class AbstractWidgetDescription extends AbstractControlDescription {
 
-    protected Function<VariableManager, List<Object>> diagnosticsProviders;
+    protected Function<VariableManager, List<Object>> diagnosticsProvider;
 
     protected Function<Object, String> kindProvider;
 
     protected Function<Object, String> messageProvider;
 
-    public Function<VariableManager, List<Object>> getDiagnosticsProviders() {
-        return this.diagnosticsProviders;
+    public Function<VariableManager, List<Object>> getDiagnosticsProvider() {
+        return this.diagnosticsProvider;
     }
 
     public Function<Object, String> getKindProvider() {

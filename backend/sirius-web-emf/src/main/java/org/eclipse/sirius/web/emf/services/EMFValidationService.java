@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.Diagnostic;
@@ -54,28 +53,23 @@ public class EMFValidationService implements IValidationService {
     @Override
     public List<Object> validate(IEditingContext editingContext) {
         // @formatter:off
-        List<Diagnostic> diagnostics = Optional.of(editingContext)
+        return Optional.of(editingContext)
             .filter(EditingContext.class::isInstance)
             .map(EditingContext.class::cast)
             .map(this::validate)
             .orElseGet(List::of);
-
-        return diagnostics.stream()
-            .map(this::convertToValidationDiagnostic)
-            .collect(Collectors.toList());
         // @formatter:on
     }
 
     @Override
     public List<Object> validate(Object object, String featureName) {
         if (object instanceof EObject) {
-            Diagnostician diagnostician = new Diagnostician(this.eValidatorRegistry);
+            Diagnostician diagnostician = this.getNewDiagnostician();
             Diagnostic diagnostic = diagnostician.validate((EObject) object);
             if (Diagnostic.OK != diagnostic.getSeverity()) {
                 // @formatter:off
                 return diagnostic.getChildren().stream()
                         .filter(diag -> this.filterDiagnosticByFeatureName(diag, featureName))
-                        .map(this::convertToFormDiagnostic)
                         .collect(Collectors.toList());
                 // @formatter:on
             }
@@ -96,24 +90,12 @@ public class EMFValidationService implements IValidationService {
         return false;
     }
 
-    private List<Diagnostic> validate(EditingContext editingContext) {
+    private List<Object> validate(EditingContext editingContext) {
         AdapterFactoryEditingDomain domain = editingContext.getDomain();
 
         Map<Object, Object> options = new HashMap<>();
         options.put(Diagnostician.VALIDATE_RECURSIVELY, true);
-        Diagnostician diagnostician = new Diagnostician(this.eValidatorRegistry) {
-            @Override
-            public String getObjectLabel(EObject eObject) {
-                if (EMFValidationService.this.composedAdapterFactory instanceof IItemLabelProvider) {
-                    IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
-                    if (itemLabelProvider != null) {
-                        return itemLabelProvider.getText(eObject);
-                    }
-                }
-
-                return super.getObjectLabel(eObject);
-            }
-        };
+        Diagnostician diagnostician = this.getNewDiagnostician();
 
         // @formatter:off
         return domain.getResourceSet().getResources().stream()
@@ -126,26 +108,20 @@ public class EMFValidationService implements IValidationService {
         // @formatter:on
     }
 
-    private org.eclipse.sirius.web.validation.Diagnostic convertToValidationDiagnostic(Diagnostic diagnostic) {
-        String kind = this.getKind(diagnostic);
+    private Diagnostician getNewDiagnostician() {
+        return new Diagnostician(this.eValidatorRegistry) {
+            @Override
+            public String getObjectLabel(EObject eObject) {
+                if (EMFValidationService.this.composedAdapterFactory instanceof IItemLabelProvider) {
+                    IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
+                    if (itemLabelProvider != null) {
+                        return itemLabelProvider.getText(eObject);
+                    }
+                }
 
-        // @formatter:off
-        return org.eclipse.sirius.web.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
-                .kind(kind)
-                .message(diagnostic.getMessage())
-                .build();
-        // @formatter:on
-    }
-
-    private org.eclipse.sirius.web.forms.validation.Diagnostic convertToFormDiagnostic(Diagnostic diagnostic) {
-        String kind = this.getKind(diagnostic);
-
-     // @formatter:off
-        return org.eclipse.sirius.web.forms.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
-                .kind(kind)
-                .message(diagnostic.getMessage())
-                .build();
-        // @formatter:on
+                return super.getObjectLabel(eObject);
+            }
+        };
     }
 
     private String getKind(Diagnostic diagnostic) {

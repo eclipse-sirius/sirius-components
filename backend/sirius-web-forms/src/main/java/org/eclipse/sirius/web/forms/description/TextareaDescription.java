@@ -85,7 +85,7 @@ public final class TextareaDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, String, Status> newValueHandler;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -115,8 +115,8 @@ public final class TextareaDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -137,7 +137,7 @@ public final class TextareaDescription extends AbstractWidgetDescription {
             textareaDescription.labelProvider = Objects.requireNonNull(this.labelProvider);
             textareaDescription.valueProvider = Objects.requireNonNull(this.valueProvider);
             textareaDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
-            textareaDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            textareaDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             textareaDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             textareaDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return textareaDescription;

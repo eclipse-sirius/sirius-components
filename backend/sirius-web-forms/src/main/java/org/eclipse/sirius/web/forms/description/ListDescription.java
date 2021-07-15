@@ -99,7 +99,7 @@ public final class ListDescription extends AbstractWidgetDescription {
 
         private Function<VariableManager, String> itemImageURLProvider;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -139,8 +139,8 @@ public final class ListDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -163,7 +163,7 @@ public final class ListDescription extends AbstractWidgetDescription {
             listDescription.itemIdProvider = Objects.requireNonNull(this.itemIdProvider);
             listDescription.itemLabelProvider = Objects.requireNonNull(this.itemLabelProvider);
             listDescription.itemImageURLProvider = Objects.requireNonNull(this.itemImageURLProvider);
-            listDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            listDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             listDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             listDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return listDescription;

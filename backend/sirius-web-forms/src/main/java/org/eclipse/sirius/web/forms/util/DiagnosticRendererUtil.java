@@ -30,7 +30,7 @@ public class DiagnosticRendererUtil {
 
     public List<Element> renderDiagnostics(AbstractWidgetDescription widgetDescription, VariableManager variableManager) {
         List<Element> children = new ArrayList<>();
-        List<Object> diagnostics = widgetDescription.getDiagnosticsProviders().apply(variableManager);
+        List<Object> diagnostics = widgetDescription.getDiagnosticsProvider().apply(variableManager);
         for (Object diagnostic : diagnostics) {
             var diagnosticComponentProps = new DiagnosticComponentProps(diagnostic, widgetDescription);
             children.add(new Element(DiagnosticComponent.class, diagnosticComponentProps));

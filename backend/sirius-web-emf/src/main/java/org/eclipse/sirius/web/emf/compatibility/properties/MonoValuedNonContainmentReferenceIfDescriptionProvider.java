@@ -84,7 +84,7 @@ public class MonoValuedNonContainmentReferenceIfDescriptionProvider {
                 .optionIdProvider(this.getOptionIdProvider())
                 .optionLabelProvider(this.getOptionLabelProvider())
                 .newValueHandler(this.getNewValueHandler())
-                .diagnosticsProviders((variableManager) -> List.of())
+                .diagnosticsProvider((variableManager) -> List.of())
                 .kindProvider((object) -> "") //$NON-NLS-1$
                 .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();

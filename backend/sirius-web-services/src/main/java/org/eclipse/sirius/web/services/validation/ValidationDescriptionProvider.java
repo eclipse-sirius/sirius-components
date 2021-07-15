@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.sirius.web.collaborative.validation.api.IValidationDescriptionProvider;
 import org.eclipse.sirius.web.collaborative.validation.api.IValidationService;
 import org.eclipse.sirius.web.core.api.IEditingContext;
 import org.eclipse.sirius.web.representations.VariableManager;
-import org.eclipse.sirius.web.validation.Diagnostic;
 import org.eclipse.sirius.web.validation.description.ValidationDescription;
 import org.springframework.stereotype.Service;
 
@@ -48,14 +48,14 @@ public class ValidationDescriptionProvider implements IValidationDescriptionProv
         return ValidationDescription.newValidationDescription(UUID.nameUUIDFromBytes("validation_description".getBytes())) //$NON-NLS-1$
                 .label("Validation") //$NON-NLS-1$
                 .canCreatePredicate(canCreatePredicate)
-                .diagnosticsProviders(this::getDiagnosticProviders)
+                .diagnosticsProviders(this::getDiagnosticsProviders)
                 .kindProvider(this::kindProvider)
                 .messageProvider(this::messageProvider)
                 .build();
         // @formatter:on
     }
 
-    private List<Object> getDiagnosticProviders(VariableManager variableManager) {
+    private List<Object> getDiagnosticsProviders(VariableManager variableManager) {
         var optionaEditingContext = variableManager.get(IEditingContext.EDITING_CONTEXT, IEditingContext.class);
 
         // @formatter:off
@@ -66,11 +66,25 @@ public class ValidationDescriptionProvider implements IValidationDescriptionProv
     }
 
     private String kindProvider(Object object) {
+        String kind = "Unknown"; //$NON-NLS-1$
         if (object instanceof Diagnostic) {
             Diagnostic diagnostic = (Diagnostic) object;
-            return diagnostic.getKind();
+            switch (diagnostic.getSeverity()) {
+            case org.eclipse.emf.common.util.Diagnostic.ERROR:
+                kind = "Error"; //$NON-NLS-1$
+                break;
+            case org.eclipse.emf.common.util.Diagnostic.WARNING:
+                kind = "Warning"; //$NON-NLS-1$
+                break;
+            case org.eclipse.emf.common.util.Diagnostic.INFO:
+                kind = "Info"; //$NON-NLS-1$
+                break;
+            default:
+                kind = "Unknown"; //$NON-NLS-1$
+                break;
+            }
         }
-        return ""; //$NON-NLS-1$
+        return kind;
     }
 
     private String messageProvider(Object object) {

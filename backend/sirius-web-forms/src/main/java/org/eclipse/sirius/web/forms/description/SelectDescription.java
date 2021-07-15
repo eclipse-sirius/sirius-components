@@ -109,7 +109,7 @@ public final class SelectDescription extends AbstractWidgetDescription {
 
         private BiFunction<VariableManager, String, Status> newValueHandler;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -154,8 +154,8 @@ public final class SelectDescription extends AbstractWidgetDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -179,7 +179,7 @@ public final class SelectDescription extends AbstractWidgetDescription {
             selectDescription.optionLabelProvider = Objects.requireNonNull(this.optionLabelProvider);
             selectDescription.valueProvider = Objects.requireNonNull(this.valueProvider);
             selectDescription.newValueHandler = Objects.requireNonNull(this.newValueHandler);
-            selectDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            selectDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             selectDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             selectDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return selectDescription;
