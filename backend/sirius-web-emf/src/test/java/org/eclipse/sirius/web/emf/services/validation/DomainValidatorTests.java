@@ -78,7 +78,9 @@ public class DomainValidatorTests {
                 0,
                 String.format("The domain %1$s uri's does not start with \"domain://\".", domain.getName()), //$NON-NLS-1$
                 new Object [] {
-                        DomainPackage.Literals.DOMAIN__URI.getName(),
+                        domain,
+                        DomainPackage.Literals.DOMAIN__URI,
+
         }));
         // @formatter:on
 
@@ -102,7 +104,8 @@ public class DomainValidatorTests {
                 0,
                 "The domain name should not be empty.", //$NON-NLS-1$
                 new Object [] {
-                        DomainPackage.Literals.NAMED_ELEMENT__NAME.getName(),
+                        domain,
+                        DomainPackage.Literals.NAMED_ELEMENT__NAME,
         }));
         // @formatter:on
 

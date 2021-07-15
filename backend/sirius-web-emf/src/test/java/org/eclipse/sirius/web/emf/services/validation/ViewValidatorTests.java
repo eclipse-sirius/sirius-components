@@ -104,7 +104,8 @@ public class ViewValidatorTests {
                 0,
                 "The condition should not be empty", //$NON-NLS-1$
                 new Object [] {
-                        ViewPackage.Literals.CONDITIONAL__CONDITION.getName(),
+                        conditionalNodeStyle,
+                        ViewPackage.Literals.CONDITIONAL__CONDITION,
                 })
             );
         // @formatter:on
@@ -128,7 +129,8 @@ public class ViewValidatorTests {
                 0,
                 "The color should not be empty", //$NON-NLS-1$
                 new Object [] {
-                        ViewPackage.Literals.STYLE__COLOR.getName(),
+                        conditionalNodeStyle,
+                        ViewPackage.Literals.STYLE__COLOR,
                 })
             );
         // @formatter:on
@@ -156,7 +158,8 @@ public class ViewValidatorTests {
                 0,
                 String.format("The node description \"%1$s\" does not have a valid domain class", nodeDescription.getDomainType()), //$NON-NLS-1$
                 new Object [] {
-                        ViewPackage.Literals.DIAGRAM_ELEMENT_DESCRIPTION__DOMAIN_TYPE.getName(),
+                        nodeDescription,
+                        ViewPackage.Literals.DIAGRAM_ELEMENT_DESCRIPTION__DOMAIN_TYPE,
                 })
             );
 

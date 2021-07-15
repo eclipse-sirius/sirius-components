@@ -110,11 +110,9 @@ public class EMFValidationService implements IValidationService {
         return new Diagnostician(this.eValidatorRegistry) {
             @Override
             public String getObjectLabel(EObject eObject) {
-                if (EMFValidationService.this.composedAdapterFactory instanceof IItemLabelProvider) {
-                    IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
-                    if (itemLabelProvider != null) {
-                        return itemLabelProvider.getText(eObject);
-                    }
+                IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
+                if (itemLabelProvider != null) {
+                    return itemLabelProvider.getText(eObject);
                 }
 
                 return super.getObjectLabel(eObject);
