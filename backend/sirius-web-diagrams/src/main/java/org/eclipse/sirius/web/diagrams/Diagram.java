@@ -50,6 +50,8 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
 
     private Size size;
 
+    private boolean autoLayout;
+
     private List<Node> nodes;
 
     private List<Edge> edges;
@@ -110,6 +112,12 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
 
     @GraphQLField
     @GraphQLNonNull
+    public boolean isAutoLayout() {
+        return this.autoLayout;
+    }
+
+    @GraphQLField
+    @GraphQLNonNull
     public List<@GraphQLNonNull Node> getNodes() {
         return this.nodes;
     }
@@ -155,6 +163,8 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
 
         private Size size;
 
+        private boolean autoLayout;
+
         private List<Node> nodes;
 
         private List<Edge> edges;
@@ -170,6 +180,7 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
             this.label = diagram.getLabel();
             this.position = diagram.getPosition();
             this.size = diagram.getSize();
+            this.autoLayout = diagram.autoLayout;
             this.nodes = diagram.getNodes();
             this.edges = diagram.getEdges();
         }
@@ -199,6 +210,11 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
             return this;
         }
 
+        public Builder autoLayout(boolean autoLayout) {
+            this.autoLayout = Objects.requireNonNull(autoLayout);
+            return this;
+        }
+
         public Builder nodes(List<Node> nodes) {
             this.nodes = Objects.requireNonNull(nodes);
             return this;
@@ -218,6 +234,7 @@ public final class Diagram implements IRepresentation, ISemanticRepresentation {
             diagram.label = Objects.requireNonNull(this.label);
             diagram.position = Objects.requireNonNull(this.position);
             diagram.size = Objects.requireNonNull(this.size);
+            diagram.autoLayout = this.autoLayout;
             diagram.nodes = Objects.requireNonNull(this.nodes);
             diagram.edges = Objects.requireNonNull(this.edges);
             return diagram;

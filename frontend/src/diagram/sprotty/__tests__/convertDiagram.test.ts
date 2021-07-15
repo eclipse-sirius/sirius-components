@@ -46,6 +46,7 @@ describe('ModelConverter', () => {
       'position',
       'features',
       'size',
+      'autoLayout',
       'children',
     ]);
 

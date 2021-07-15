@@ -44,6 +44,8 @@ public final class DiagramElementProps implements IProps {
 
     private Size size;
 
+    private boolean autoLayout;
+
     private List<Element> children;
 
     private DiagramElementProps() {
@@ -72,6 +74,10 @@ public final class DiagramElementProps implements IProps {
 
     public Size getSize() {
         return this.size;
+    }
+
+    public boolean isAutoLayout() {
+        return this.autoLayout;
     }
 
     @Override
@@ -108,6 +114,8 @@ public final class DiagramElementProps implements IProps {
 
         private Size size;
 
+        private boolean autoLayout;
+
         private List<Element> children;
 
         private Builder(UUID id) {
@@ -139,6 +147,11 @@ public final class DiagramElementProps implements IProps {
             return this;
         }
 
+        public Builder autoLayout(boolean autoLayout) {
+            this.autoLayout = autoLayout;
+            return this;
+        }
+
         public Builder children(List<Element> children) {
             this.children = Objects.requireNonNull(children);
             return this;
@@ -152,6 +165,7 @@ public final class DiagramElementProps implements IProps {
             diagramElementProps.label = Objects.requireNonNull(this.label);
             diagramElementProps.position = Objects.requireNonNull(this.position);
             diagramElementProps.size = Objects.requireNonNull(this.size);
+            diagramElementProps.autoLayout = Objects.requireNonNull(this.autoLayout);
             diagramElementProps.children = Objects.requireNonNull(this.children);
             return diagramElementProps;
         }
