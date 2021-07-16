@@ -78,6 +78,7 @@ public class DiagramElementFactory implements IElementFactory {
                 .label(props.getLabel())
                 .position(props.getPosition())
                 .size(props.getSize())
+                .autoLayout(props.isAutoLayout())
                 .nodes(nodes)
                 .edges(edges)
                 .build();

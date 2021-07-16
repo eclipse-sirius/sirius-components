@@ -94,6 +94,7 @@ public class DiagramComponent implements IComponent {
                 .label(label)
                 .position(Position.UNDEFINED)
                 .size(Size.UNDEFINED)
+                .autoLayout(diagramDescription.isAutoLayout())
                 .children(children)
                 .build();
         // @formatter:on

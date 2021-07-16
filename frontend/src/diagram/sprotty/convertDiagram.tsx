@@ -41,8 +41,8 @@ import { resizeFeature } from './resize/model';
  * @return a Sprotty diagram object
  */
 export const convertDiagram = (diagram, httpOrigin: string, readOnly: boolean) => {
-  const { id, descriptionId, kind, targetObjectId, label, position, size } = diagram;
-  const nodes = diagram.nodes.map((node) => convertNode(node, httpOrigin, readOnly));
+  const { id, descriptionId, kind, targetObjectId, label, position, size, autoLayout } = diagram;
+  const nodes = diagram.nodes.map((node) => convertNode(node, httpOrigin, readOnly, autoLayout));
   const edges = diagram.edges.map((edge) => convertEdge(edge, httpOrigin, readOnly));
 
   return {
@@ -55,27 +55,28 @@ export const convertDiagram = (diagram, httpOrigin: string, readOnly: boolean) =
     position,
     features: createFeatureSet([hoverFeedbackFeature, viewportFeature]),
     size,
+    autoLayout,
     children: [...nodes, ...edges],
   };
 };
 
-const convertNode = (node, httpOrigin: string, readOnly: boolean) => {
+const convertNode = (node, httpOrigin: string, readOnly: boolean, autoLayout: boolean) => {
   const { id, type, targetObjectId, targetObjectKind, targetObjectLabel, descriptionId, label, style, size, position } =
     node;
 
   let borderNodes = [];
   if (node.borderNodes) {
-    borderNodes = node.borderNodes.map((borderNode) => convertNode(borderNode, httpOrigin, readOnly));
+    borderNodes = node.borderNodes.map((borderNode) => convertNode(borderNode, httpOrigin, readOnly, autoLayout));
   }
   let childNodes = [];
   if (node.childNodes) {
-    childNodes = node.childNodes.map((childNode) => convertNode(childNode, httpOrigin, readOnly));
+    childNodes = node.childNodes.map((childNode) => convertNode(childNode, httpOrigin, readOnly, autoLayout));
   }
 
   const convertedLabel = convertLabel(label, httpOrigin, readOnly);
   const convertedStyle = convertNodeStyle(style, httpOrigin);
 
-  const features = handleNodeFeatures(node, readOnly);
+  const features = handleNodeFeatures(node, readOnly, autoLayout);
 
   const editableLabel = handleNodeLabel(convertedLabel, readOnly);
 
@@ -104,7 +105,7 @@ const handleNodeLabel = (label, readOnly: boolean) => {
   return editableLabel;
 };
 
-const handleNodeFeatures = (node, readOnly: boolean): FeatureSet => {
+const handleNodeFeatures = (node, readOnly: boolean, autoLayout: boolean): FeatureSet => {
   const features = new Set<symbol>([
     connectableFeature,
     deletableFeature,
@@ -131,6 +132,11 @@ const handleNodeFeatures = (node, readOnly: boolean): FeatureSet => {
     features.delete(resizeFeature);
     features.delete(moveFeature);
     features.delete(withEditLabelFeature);
+  }
+
+  if (autoLayout) {
+    features.delete(resizeFeature);
+    features.delete(moveFeature);
   }
 
   return features;

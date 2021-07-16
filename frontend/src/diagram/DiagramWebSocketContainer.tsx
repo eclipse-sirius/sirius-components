@@ -631,14 +631,17 @@ export const DiagramWebSocketContainer = ({
     }
   };
 
-  const onArrangeAll = () => {
-    const input = {
-      id: uuid(),
-      editingContextId,
-      representationId,
+  let onArrangeAll = undefined;
+  if (diagram && !diagram.autoLayout) {
+    onArrangeAll = () => {
+      const input = {
+        id: uuid(),
+        editingContextId,
+        representationId,
+      };
+      arrangeAllMutation({ variables: { input } });
     };
-    arrangeAllMutation({ variables: { input } });
-  };
+  }
 
   const setZoomLevel = (level) => {
     if (diagramServer) {
