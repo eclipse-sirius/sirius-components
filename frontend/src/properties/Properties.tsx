@@ -30,7 +30,6 @@ const usePropertiesStyles = makeStyles((theme) => ({
   content: {
     overflowX: 'hidden',
     overflowY: 'auto',
-    backgroundColor: theme.palette.background.default,
   },
   subscribers: {
     marginLeft: 'auto',

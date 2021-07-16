@@ -1,4 +1,4 @@
-/*******************************************************************************
+/******************************************************************************
  * Copyright (c) 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -9,17 +9,11 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
- *******************************************************************************/
+ ******************************************************************************/
 import { Selection } from 'workbench/Workbench.types';
 
 export interface RightSiteProps {
   editingContextId: string;
   selection?: Selection;
   readOnly: boolean;
-}
-
-export interface TabPanelProps {
-  children?: React.ReactNode;
-  index: any;
-  value: any;
 }

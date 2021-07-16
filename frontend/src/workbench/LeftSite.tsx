@@ -11,72 +11,118 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-import { makeStyles } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import MuiAccordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
+import MuiCollapse from '@material-ui/core/Collapse';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { ExplorerWebSocketContainer } from 'explorer/ExplorerWebSocketContainer';
 import React from 'react';
+import { ValidationWebSocketContainer } from 'validation/ValidationWebSocketContainer';
 import { LeftSiteProps } from './LeftSite.types';
 
 const useSiteStyles = makeStyles((theme) => ({
   site: {
-    display: 'flex',
-    flexDirection: 'column',
-    '& > *:nth-child(2)': {
-      flexGrow: 1,
-    },
-  },
-  tabsRoot: {
-    minHeight: theme.spacing(4),
-    borderBottomColor: theme.palette.divider,
-    borderBottomWidth: '1px',
-    borderBottomStyle: 'solid',
-  },
-  tabRoot: {
-    minHeight: theme.spacing(4),
-    textTransform: 'none',
-  },
-  tabLabel: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    '& > *:nth-child(2)': {
-      marginLeft: theme.spacing(1),
-    },
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0,1fr)',
   },
 }));
 
-const a11yProps = (id: string) => {
-  return {
-    id: `simple-tab-${id}`,
-    'aria-controls': `simple-tabpanel-${id}`,
-  };
-};
+const Accordion = withStyles({
+  root: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0,1fr)',
+    gridTemplateRows: 'min-content minmax(0,1fr)',
+    border: '1px solid rgba(0, 0, 0, .125)',
+    boxShadow: 'none',
+    '&:not(:last-child)': {
+      borderBottom: '0px',
+    },
+    '&:before': {
+      display: 'none',
+    },
+    '&$expanded': {
+      margin: '0px',
+    },
+  },
+  expanded: {},
+})(MuiAccordion);
+
+const AccordionSummary = withStyles({
+  root: {
+    borderBottom: '1px solid rgba(0, 0, 0, .125)',
+    marginBottom: -1,
+    '&$expanded': {
+      minHeight: 48,
+    },
+  },
+  content: {
+    '&$expanded': {
+      margin: '0px',
+    },
+  },
+  expanded: {},
+})(MuiAccordionSummary);
+
+const customCollapse = withStyles({
+  entered: {
+    overflow: 'auto',
+  },
+})(MuiCollapse);
 
 export const LeftSite = ({ editingContextId, setSelection, selection, readOnly }: LeftSiteProps) => {
   const classes = useSiteStyles();
 
+  const [explorerExpanded, setExplorerExpanded] = React.useState<boolean>(true);
+  const [validationExpanded, setValidationExpanded] = React.useState<boolean>(false);
+
+  const handleChange =
+    (setState: React.Dispatch<React.SetStateAction<boolean>>) =>
+    (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+      setState(isExpanded);
+    };
+
+  let siteStyle: React.CSSProperties = {};
+  if (explorerExpanded) {
+    siteStyle.gridTemplateRows = 'minmax(0,1fr)';
+  } else {
+    siteStyle.gridTemplateRows = 'min-content';
+  }
+
+  if (validationExpanded) {
+    siteStyle.gridTemplateRows = `${siteStyle.gridTemplateRows} minmax(0,1fr)`;
+  } else {
+    siteStyle.gridTemplateRows = `${siteStyle.gridTemplateRows} min-content`;
+  }
+
   return (
-    <div className={classes.site}>
-      <Tabs
-        classes={{ root: classes.tabsRoot }}
-        textColor="primary"
-        indicatorColor="primary"
-        variant="fullWidth"
-        value={0}>
-        <Tab
-          {...a11yProps('explorer')}
-          classes={{ root: classes.tabRoot }}
-          data-testid="explorer"
-          label={<div className={classes.tabLabel}>Explorer</div>}
-        />
-      </Tabs>
-      <ExplorerWebSocketContainer
-        editingContextId={editingContextId}
-        setSelection={setSelection}
-        selection={selection}
-        readOnly={readOnly}
-      />
+    <div className={classes.site} style={siteStyle}>
+      <Accordion
+        square
+        expanded={explorerExpanded}
+        onChange={handleChange(setExplorerExpanded)}
+        TransitionComponent={customCollapse as any}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>Explorer</AccordionSummary>
+        <AccordionDetails>
+          <ExplorerWebSocketContainer
+            editingContextId={editingContextId}
+            setSelection={setSelection}
+            selection={selection}
+            readOnly={readOnly}
+          />
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        square
+        expanded={validationExpanded}
+        onChange={handleChange(setValidationExpanded)}
+        TransitionComponent={customCollapse as any}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>Validation</AccordionSummary>
+        <AccordionDetails>
+          <ValidationWebSocketContainer editingContextId={editingContextId} />
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 };
