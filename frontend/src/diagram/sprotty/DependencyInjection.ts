@@ -30,6 +30,7 @@ import {
 import { Container, ContainerModule, decorate, inject } from 'inversify';
 import {
   boundsModule,
+  configureActionHandler,
   configureModelElement,
   configureView,
   configureViewerOptions,
@@ -38,6 +39,8 @@ import {
   edgeEditModule,
   edgeLayoutModule,
   EditLabelAction,
+  EditLabelActionHandler,
+  EditLabelUI,
   exportModule,
   fadeModule,
   graphModule,
@@ -45,7 +48,6 @@ import {
   HtmlRootView,
   KeyListener,
   labelEditModule,
-  labelEditUiModule,
   LogLevel,
   modelSourceModule,
   MouseListener,
@@ -111,6 +113,22 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
   configureView({ bind, isBound }, 'pre-rendered', PreRenderedView);
   configureView({ bind, isBound }, 'routing-point', SRoutingHandleView);
   configureView({ bind, isBound }, 'volatile-routing-point', SRoutingHandleView);
+});
+
+class EditLabelUIWithInitialContent extends EditLabelUI {
+  protected applyTextContents() {
+    if (this.label) {
+      this.inputElement.value = this.label.text;
+      //this.inputElement.setSelectionRange(0, this.inputElement.value.length);
+    }
+  }
+}
+
+const labelEditUiModule = new ContainerModule((bind, _unbind, isBound) => {
+  const context = { bind, isBound };
+  configureActionHandler(context, EditLabelAction.KIND, EditLabelActionHandler);
+  bind(EditLabelUIWithInitialContent).toSelf().inSingletonScope();
+  bind(TYPES.IUIExtension).toService(EditLabelUIWithInitialContent);
 });
 
 /**
@@ -258,7 +276,7 @@ export const createDependencyInjectionContainer = (containerId, onSelectElement,
         event.key.length === 1 &&
         directEditActivationValidCharacters.test(event.key);
       if (validFirstInputChar) {
-        return [{ kind: EditLabelAction.KIND, element }];
+        return [{ kind: EditLabelAction.KIND, element, firstChar: event.key }];
       }
     }
     return [];

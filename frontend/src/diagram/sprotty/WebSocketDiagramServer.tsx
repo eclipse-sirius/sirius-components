@@ -26,6 +26,7 @@ import {
   SelectAction,
   SetViewportAction,
   SGraph,
+  SLabel,
   SNode,
   UpdateModelAction,
 } from 'sprotty';
@@ -201,6 +202,10 @@ export class SiriusWebWebSocketDiagramServer extends ModelSource {
       selectedItems.forEach((item) => {
         const label = item.editableLabel;
         if (label) {
+          const slabel = item.children.find((c) => c instanceof SLabel);
+          if (slabel && action.firstChar) {
+            slabel.text = action.firstChar;
+          }
           this.actionDispatcher.dispatchAll([{ kind: HIDE_CONTEXTUAL_TOOLBAR_ACTION }, new EditLabelAction(label.id)]);
         }
       });
