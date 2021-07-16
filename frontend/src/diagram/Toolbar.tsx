@@ -138,6 +138,7 @@ export const Toolbar = ({
           size="small"
           color="inherit"
           aria-label="arrange-all"
+          disabled={!onArrangeAll}
           onClick={onArrangeAll}
           data-testid="arrange-all">
           <AccountTreeIcon fontSize="small" />
