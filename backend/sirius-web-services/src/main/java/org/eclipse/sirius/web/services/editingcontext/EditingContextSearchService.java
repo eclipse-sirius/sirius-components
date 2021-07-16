@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.sirius.emfjson.resource.JsonResource;
@@ -93,6 +94,7 @@ public class EditingContextSearchService implements IEditingContextSearchService
 
         this.logger.debug("Loading the editing context {}", editingContextId); //$NON-NLS-1$
         ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.eAdapters().add(new ECrossReferenceAdapter());
 
         EPackageRegistryImpl ePackageRegistry = new EPackageRegistryImpl();
         this.globalEPackageRegistry.forEach(ePackageRegistry::put);

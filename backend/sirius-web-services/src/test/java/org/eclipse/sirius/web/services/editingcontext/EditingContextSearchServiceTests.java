@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.sirius.web.core.api.IEditingContext;
@@ -143,9 +144,22 @@ public class EditingContextSearchServiceTests {
 
     private void assertProperResourceLoading(Resource resource, DocumentEntity documentEntity) {
         assertThat(resource).isNotNull();
-        assertThat(resource.eAdapters()).hasSize(1);
-        assertThat(resource.eAdapters().get(0)).isInstanceOf(DocumentMetadataAdapter.class);
-        DocumentMetadataAdapter firstAdapter = (DocumentMetadataAdapter) resource.eAdapters().get(0);
-        assertThat(firstAdapter.getName()).isEqualTo(documentEntity.getName());
+        assertThat(resource.eAdapters()).hasSize(2);
+        // @formatter:off
+        var optionalDocumentMetadataAdapter = resource.eAdapters().stream()
+                                                      .filter(DocumentMetadataAdapter.class::isInstance)
+                                                      .map(DocumentMetadataAdapter.class::cast)
+                                                      .findFirst();
+        // @formatter:on
+        assertThat(optionalDocumentMetadataAdapter).isPresent();
+        assertThat(optionalDocumentMetadataAdapter.get().getName()).isEqualTo(documentEntity.getName());
+
+        // @formatter:off
+        var optionalCrossReferencerAdapter = resource.eAdapters().stream()
+                                                      .filter(ECrossReferenceAdapter.class::isInstance)
+                                                      .map(ECrossReferenceAdapter.class::cast)
+                                                      .findFirst();
+        // @formatter:on
+        assertThat(optionalCrossReferencerAdapter).isPresent();
     }
 }

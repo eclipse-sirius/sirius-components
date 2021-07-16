@@ -74,7 +74,7 @@ public class AQLInterpreter {
      *            to classes, such as <semanticMM>::<AClass>, can be interpreted.
      */
     public AQLInterpreter(List<Class<?>> classes, List<EPackage> ePackages) {
-        this.queryEnvironment = Query.newEnvironmentWithDefaultServices(null);
+        this.queryEnvironment = Query.newEnvironmentWithDefaultServices(new SimpleCrossReferenceProvider());
         this.queryEnvironment.registerEPackage(EcorePackage.eINSTANCE);
         this.queryEnvironment.registerCustomClassMapping(EcorePackage.eINSTANCE.getEStringToStringMapEntry(), EStringToStringMapEntryImpl.class);
 
