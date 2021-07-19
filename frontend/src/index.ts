@@ -82,6 +82,7 @@ export * from './properties/Properties';
 export * from './properties/PropertiesWebSocketContainer';
 export * from './properties/propertysections/CheckboxPropertySection';
 export * from './properties/propertysections/ListPropertySection';
+export * from './properties/propertysections/MultiSelectPropertySection';
 export * from './properties/propertysections/RadioPropertySection';
 export * from './properties/propertysections/SelectPropertySection';
 export * from './properties/propertysections/TextfieldPropertySection';

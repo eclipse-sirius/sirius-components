@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.AbstractWidgetDescription;
 import org.eclipse.sirius.web.forms.description.CheckboxDescription;
 import org.eclipse.sirius.web.forms.description.ListDescription;
+import org.eclipse.sirius.web.forms.description.MultiSelectDescription;
 import org.eclipse.sirius.web.forms.description.RadioDescription;
 import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.forms.description.TextareaDescription;
@@ -60,6 +61,9 @@ public class WidgetComponent implements IComponent {
         } else if (widgetDescription instanceof SelectDescription) {
             SelectComponentProps selectProps = new SelectComponentProps(variableManager, (SelectDescription) widgetDescription);
             element = new Element(SelectComponent.class, selectProps);
+        } else if (widgetDescription instanceof MultiSelectDescription) {
+            MultiSelectComponentProps multiSelectProps = new MultiSelectComponentProps(variableManager, (MultiSelectDescription) widgetDescription);
+            element = new Element(MultiSelectComponent.class, multiSelectProps);
         } else if (widgetDescription instanceof RadioDescription) {
             RadioComponentProps radioProps = new RadioComponentProps(variableManager, (RadioDescription) widgetDescription);
             element = new Element(RadioComponent.class, radioProps);
