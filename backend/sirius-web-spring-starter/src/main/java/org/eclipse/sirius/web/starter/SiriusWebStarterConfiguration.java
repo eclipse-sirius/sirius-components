@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
         "org.eclipse.sirius.web.spring.collaborative",
         "org.eclipse.sirius.web.spring.collaborative.diagrams",
         "org.eclipse.sirius.web.spring.collaborative.forms",
+        "org.eclipse.sirius.web.spring.collaborative.selection",
         "org.eclipse.sirius.web.spring.collaborative.trees",
         "org.eclipse.sirius.web.spring.collaborative.validation",
     }

@@ -37,6 +37,7 @@
 		<module>sirius-web-collaborative-api</module>
 		<module>sirius-web-collaborative-diagrams-api</module>
 		<module>sirius-web-collaborative-forms-api</module>
+		<module>sirius-web-collaborative-selection-api</module>
 		<module>sirius-web-collaborative-trees-api</module>
 		<module>sirius-web-collaborative-validation-api</module>
 		<module>sirius-web-services-api</module>
@@ -53,9 +54,11 @@
 		<module>sirius-web-graphql-voyager</module>
 		<module>sirius-web-graphql</module>
 		<module>sirius-web-representations</module>
+		<module>sirius-web-selection</module>
 		<module>sirius-web-services</module>
 		<module>sirius-web-spring-collaborative-diagrams</module>
 		<module>sirius-web-spring-collaborative-forms</module>
+		<module>sirius-web-spring-collaborative-selection</module>
 		<module>sirius-web-spring-collaborative-trees</module>
 		<module>sirius-web-spring-collaborative-validation</module>
 		<module>sirius-web-spring-collaborative</module>

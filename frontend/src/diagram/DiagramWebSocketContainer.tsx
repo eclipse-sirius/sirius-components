@@ -18,14 +18,17 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { useMachine } from '@xstate/react';
 import { ServerContext } from 'common/ServerContext';
-import { Palette, Tool } from 'diagram/DiagramWebSocketContainer.types';
+import { CreateNodeTool, Palette, Tool } from 'diagram/DiagramWebSocketContainer.types';
 import {
+  CloseSelectionDialogEvent,
   DiagramRefreshedEvent,
   DiagramWebSocketContainerContext,
   DiagramWebSocketContainerEvent,
   diagramWebSocketContainerMachine,
+  HandleSelectedObjectInSelectionDialogEvent,
   HideToastEvent,
   InitializeRepresentationEvent,
+  ResetSelectedObjectInSelectionDialogEvent,
   SchemaValue,
   SelectedElementEvent,
   SelectionEvent,
@@ -34,6 +37,7 @@ import {
   SetContextualPaletteEvent,
   SetDefaultToolEvent,
   SetToolSectionsEvent,
+  ShowSelectionDialogEvent,
   ShowToastEvent,
   SubscribersUpdatedEvent,
   SwithRepresentationEvent,
@@ -65,6 +69,7 @@ import {
 import { Toolbar } from 'diagram/Toolbar';
 import { canInvokeTool } from 'diagram/toolServices';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import { SelectionDialogWebSocketContainer } from 'selection/SelectionDialogWebSocketContainer';
 import { EditLabelAction, FitToScreenAction, SEdge, SNode } from 'sprotty';
 import { v4 as uuid } from 'uuid';
 import { RepresentationComponentProps } from 'workbench/Workbench.types';
@@ -262,7 +267,7 @@ export const DiagramWebSocketContainer = ({
   const [{ value, context }, dispatch] = useMachine<DiagramWebSocketContainerContext, DiagramWebSocketContainerEvent>(
     diagramWebSocketContainerMachine
   );
-  const { toast, diagramWebSocketContainer } = value as SchemaValue;
+  const { toast, diagramWebSocketContainer, selectionDialog } = value as SchemaValue;
   const {
     id,
     displayedRepresentationId,
@@ -275,6 +280,7 @@ export const DiagramWebSocketContainer = ({
     zoomLevel,
     subscribers,
     message,
+    selectedObjectId,
   } = context;
 
   const [
@@ -414,6 +420,7 @@ export const DiagramWebSocketContainer = ({
             toolId,
             startingPositionX,
             startingPositionY,
+            selectedObjectId,
           };
           invokeNodeToolMutation({ variables: { input } });
         }
@@ -421,7 +428,7 @@ export const DiagramWebSocketContainer = ({
         dispatch(setActiveToolEvent);
       }
     },
-    [editingContextId, representationId, invokeNodeToolMutation, invokeEdgeToolMutation, dispatch]
+    [editingContextId, representationId, selectedObjectId, invokeNodeToolMutation, invokeEdgeToolMutation, dispatch]
   );
 
   const moveElement = useCallback(
@@ -568,6 +575,17 @@ export const DiagramWebSocketContainer = ({
     }
   }, [toolSectionLoading, toolSectionData, diagramWebSocketContainer, dispatch]);
 
+  useEffect(() => {
+    if (selectedObjectId && activeTool && contextualPalette) {
+      invokeTool(activeTool, contextualPalette.element.id, contextualPalette.startingPosition);
+      diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+      const resetSelectedObjectInSelectionDialogEvent: ResetSelectedObjectInSelectionDialogEvent = {
+        type: 'RESET_SELECTED_OBJECT_IN_SELECTION_DIALOG',
+      };
+      dispatch(resetSelectedObjectInSelectionDialogEvent);
+    }
+  }, [activeTool, diagramServer, invokeTool, dispatch, selectedObjectId, contextualPalette]);
+
   const { error } = useSubscription(diagramEventSubscription, {
     variables: {
       input: {
@@ -692,7 +710,14 @@ export const DiagramWebSocketContainer = ({
   }, [deleteFromDiagramLoading, deleteFromDiagramData, deleteFromDiagramError, handleError]);
   useEffect(() => {
     handleError(invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError);
-  }, [invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError, handleError]);
+    if (!invokeNodeToolLoading) {
+      const setContextualPaletteEvent: SetContextualPaletteEvent = {
+        type: 'SET_CONTEXTUAL_PALETTE',
+        contextualPalette: null,
+      };
+      dispatch(setContextualPaletteEvent);
+    }
+  }, [invokeNodeToolLoading, invokeNodeToolData, invokeNodeToolError, handleError, dispatch]);
   useEffect(() => {
     handleError(invokeEdgeToolLoading, invokeEdgeToolData, invokeEdgeToolError);
   }, [invokeEdgeToolLoading, invokeEdgeToolData, invokeEdgeToolError, handleError]);
@@ -767,8 +792,17 @@ export const DiagramWebSocketContainer = ({
         edgeCreationFeedback.init(x, y);
         diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION, sourceElement: element });
       } else if (tool.__typename === 'CreateNodeTool') {
-        invokeTool(tool, element.id, startingPosition);
-        diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+        if (tool.selectionDescriptionId) {
+          const showSelectionDialogEvent: ShowSelectionDialogEvent = {
+            type: 'SHOW_SELECTION_DIALOG',
+          };
+          dispatch(showSelectionDialogEvent);
+          const setActiveToolEvent: SetActiveToolEvent = { type: 'SET_ACTIVE_TOOL', activeTool: tool };
+          dispatch(setActiveToolEvent);
+        } else {
+          invokeTool(tool, element.id, startingPosition);
+          diagramServer.actionDispatcher.dispatch({ kind: SOURCE_ELEMENT_ACTION });
+        }
       }
       const setDefaultToolEvent: SetDefaultToolEvent = { type: 'SET_DEFAULT_TOOL', defaultTool: tool };
       dispatch(setDefaultToolEvent);
@@ -786,6 +820,7 @@ export const DiagramWebSocketContainer = ({
       </div>
     );
   }
+
   let content = (
     <div id="diagram-container" className={classes.diagramContainer}>
       <div id="diagram-wrapper" className={classes.diagramWrapper}>
@@ -805,6 +840,25 @@ export const DiagramWebSocketContainer = ({
     );
   }
 
+  let selectModelElementDialog;
+  if (selectionDialog === 'visible') {
+    selectModelElementDialog = (
+      <SelectionDialogWebSocketContainer
+        editingContextId={editingContextId}
+        selectionRepresentationId={(activeTool as CreateNodeTool).selectionDescriptionId}
+        targetObjectId={contextualPalette.element.targetObjectId}
+        onClose={() => {
+          dispatch({ type: 'CLOSE_SELECTION_DIALOG' } as CloseSelectionDialogEvent);
+        }}
+        onFinish={(selectedObjectId) => {
+          dispatch({
+            type: 'HANDLE_SELECTED_OBJECT_IN_SELECTION_DIALOG',
+            selectedObjectId,
+          } as HandleSelectedObjectInSelectionDialogEvent);
+        }}
+      />
+    );
+  }
   return (
     <div className={classes.container}>
       <Toolbar
@@ -817,7 +871,7 @@ export const DiagramWebSocketContainer = ({
         subscribers={subscribers}
       />
       {content}
-
+      {selectModelElementDialog}
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

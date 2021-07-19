@@ -30,6 +30,7 @@ import org.eclipse.sirius.web.collaborative.diagrams.api.dto.InvokeNodeToolOnDia
 import org.eclipse.sirius.web.core.api.ErrorPayload;
 import org.eclipse.sirius.web.core.api.IEditingContext;
 import org.eclipse.sirius.web.core.api.IObjectService;
+import org.eclipse.sirius.web.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.web.diagrams.Diagram;
 import org.eclipse.sirius.web.diagrams.Node;
 import org.eclipse.sirius.web.diagrams.Position;
@@ -61,8 +62,10 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
 
     private final Counter counter;
 
+    private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
+
     public InvokeNodeToolOnDiagramEventHandler(IObjectService objectService, IDiagramQueryService diagramQueryService, IToolService toolService, ICollaborativeDiagramMessageService messageService,
-            MeterRegistry meterRegistry) {
+            MeterRegistry meterRegistry, IRepresentationDescriptionSearchService representationDescriptionSearchService) {
         this.objectService = Objects.requireNonNull(objectService);
         this.diagramQueryService = Objects.requireNonNull(diagramQueryService);
         this.toolService = Objects.requireNonNull(toolService);
@@ -73,6 +76,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
                 .tag(Monitoring.NAME, this.getClass().getSimpleName())
                 .register(meterRegistry);
         // @formatter:on
+
+        this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
     }
 
     @Override
@@ -93,7 +98,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
                     .map(CreateNodeTool.class::cast);
             // @formatter:on
             if (optionalTool.isPresent()) {
-                Status status = this.executeTool(editingContext, diagramContext, input.getDiagramElementId(), optionalTool.get(), input.getStartingPositionX(), input.getStartingPositionY());
+                Status status = this.executeTool(editingContext, diagramContext, input.getDiagramElementId(), optionalTool.get(), input.getStartingPositionX(), input.getStartingPositionY(),
+                        input.getSelectedObjectId());
                 if (Objects.equals(status, Status.OK)) {
                     return new EventHandlerResponse(new ChangeDescription(ChangeKind.SEMANTIC_CHANGE, diagramInput.getRepresentationId()),
                             new InvokeNodeToolOnDiagramSuccessPayload(diagramInput.getId(), diagram));
@@ -104,7 +110,8 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
         return new EventHandlerResponse(new ChangeDescription(ChangeKind.NOTHING, diagramInput.getRepresentationId()), new ErrorPayload(diagramInput.getId(), message));
     }
 
-    private Status executeTool(IEditingContext editingContext, IDiagramContext diagramContext, UUID diagramElementId, CreateNodeTool tool, double startingPositionX, double startingPositionY) {
+    private Status executeTool(IEditingContext editingContext, IDiagramContext diagramContext, UUID diagramElementId, CreateNodeTool tool, double startingPositionX, double startingPositionY,
+            String selectedObjectId) {
         Status result = Status.ERROR;
         Diagram diagram = diagramContext.getDiagram();
         Optional<Node> node = this.diagramQueryService.findNodeById(diagram, diagramElementId);
@@ -120,12 +127,21 @@ public class InvokeNodeToolOnDiagramEventHandler implements IDiagramEventHandler
             variableManager.put(IDiagramContext.DIAGRAM_CONTEXT, diagramContext);
             variableManager.put(IEditingContext.EDITING_CONTEXT, editingContext);
             variableManager.put(VariableManager.SELF, self.get());
+            String selectionDescriptionId = tool.getSelectionDescriptionId();
+            if (selectionDescriptionId != null && selectedObjectId != null) {
+                var selectionDescriptionOpt = this.representationDescriptionSearchService.findById(UUID.fromString(selectionDescriptionId));
+                var selectedObjectOpt = this.objectService.getObject(editingContext, selectedObjectId);
+                if (selectionDescriptionOpt.isPresent() && selectedObjectOpt.isPresent()) {
+                    variableManager.put(VariableManager.SELECTED_OBJECT_IN_SELECTION_REPRESENTATION, selectedObjectOpt.get());
+                }
+            }
 
-            result = tool.getHandler().apply(variableManager);
+            if (selectionDescriptionId == null || selectedObjectId != null) {
+                result = tool.getHandler().apply(variableManager);
+                Position newPosition = Position.at(startingPositionX, startingPositionY);
 
-            Position newPosition = Position.at(startingPositionX, startingPositionY);
-
-            diagramContext.setDiagramEvent(new CreationEvent(newPosition));
+                diagramContext.setDiagramEvent(new CreationEvent(newPosition));
+            }
         }
         return result;
     }

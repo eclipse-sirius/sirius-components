@@ -107,6 +107,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sirius.web</groupId>
+			<artifactId>sirius-web-selection</artifactId>
+			<version>0.3.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.sirius.web</groupId>
 			<artifactId>sirius-web-trees</artifactId>
 			<version>0.3.5</version>
 		</dependency>

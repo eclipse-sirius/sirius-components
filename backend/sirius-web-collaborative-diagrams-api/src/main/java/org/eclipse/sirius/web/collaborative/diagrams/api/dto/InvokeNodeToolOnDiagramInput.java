@@ -42,6 +42,8 @@ public final class InvokeNodeToolOnDiagramInput implements IDiagramInput {
 
     private double startingPositionY;
 
+    private String selectedObjectId;
+
     @Override
     @GraphQLID
     @GraphQLField
@@ -89,6 +91,11 @@ public final class InvokeNodeToolOnDiagramInput implements IDiagramInput {
     @GraphQLNonNull
     public double getStartingPositionY() {
         return this.startingPositionY;
+    }
+
+    @GraphQLField
+    public String getSelectedObjectId() {
+        return this.selectedObjectId;
     }
 
     @Override

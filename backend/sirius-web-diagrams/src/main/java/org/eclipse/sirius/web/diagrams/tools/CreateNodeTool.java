@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -48,6 +48,8 @@ public final class CreateNodeTool implements ITool {
 
     private boolean appliesToDiagramRoot;
 
+    private String selectionDescriptionId;
+
     private CreateNodeTool() {
         // Prevent instantiation
     }
@@ -87,6 +89,11 @@ public final class CreateNodeTool implements ITool {
         return this.label;
     }
 
+    @GraphQLField
+    public String getSelectionDescriptionId() {
+        return this.selectionDescriptionId;
+    }
+
     @Override
     public Function<VariableManager, Status> getHandler() {
         return this.handler;
@@ -121,6 +128,8 @@ public final class CreateNodeTool implements ITool {
 
         private boolean appliesToDiagramRoot;
 
+        private String selectionDescriptionId;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -150,6 +159,11 @@ public final class CreateNodeTool implements ITool {
             return this;
         }
 
+        public Builder selectionDescriptionId(String selectionDescriptionId) {
+            this.selectionDescriptionId = selectionDescriptionId;
+            return this;
+        }
+
         public CreateNodeTool build() {
             CreateNodeTool tool = new CreateNodeTool();
             tool.id = Objects.requireNonNull(this.id);
@@ -158,6 +172,7 @@ public final class CreateNodeTool implements ITool {
             tool.handler = Objects.requireNonNull(this.handler);
             tool.targetDescriptions = Objects.requireNonNull(this.targetDescriptions);
             tool.appliesToDiagramRoot = this.appliesToDiagramRoot;
+            tool.selectionDescriptionId = this.selectionDescriptionId;
             return tool;
         }
     }

@@ -25,6 +25,7 @@ import org.eclipse.sirius.web.compat.services.representations.SiriusRepresentati
 import org.eclipse.sirius.web.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.web.forms.description.FormDescription;
 import org.eclipse.sirius.web.representations.IRepresentationDescription;
+import org.eclipse.sirius.web.selection.description.SelectionDescription;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
@@ -59,7 +60,7 @@ public class SiriusRepresentationDescriptionRegistryConfigurer implements IRepre
             .flatMap(List::stream)
             .map(this::getRepresentationDescriptions)
             .flatMap(List::stream)
-            .filter(DiagramDescription.class::isInstance)
+            .filter(description -> description instanceof DiagramDescription || description instanceof SelectionDescription)
             .forEach(registry::add);
         // @formatter:on
     }
