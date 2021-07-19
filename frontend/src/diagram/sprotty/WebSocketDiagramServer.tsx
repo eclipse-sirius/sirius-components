@@ -26,10 +26,10 @@ import {
   SelectAction,
   SetViewportAction,
   SGraph,
-  SLabel,
   SNode,
   UpdateModelAction,
 } from 'sprotty';
+import { SExtendedLabel } from './DependencyInjection';
 import { ResizeAction, SiriusResizeCommand } from './resize/siriusResize';
 /** Action to delete a sprotty element */
 export const SPROTTY_DELETE_ACTION = 'sprottyDeleteElement';
@@ -202,9 +202,13 @@ export class SiriusWebWebSocketDiagramServer extends ModelSource {
       selectedItems.forEach((item) => {
         const label = item.editableLabel;
         if (label) {
-          const slabel = item.children.find((c) => c instanceof SLabel);
+          const slabel = item.children.find((c) => c instanceof SExtendedLabel);
           if (slabel && action.firstChar) {
-            slabel.text = action.firstChar;
+            slabel.initialText = action.firstChar;
+            slabel.preSelect = false;
+          } else if (slabel) {
+            slabel.initialText = slabel.text;
+            slabel.preSelect = true;
           }
           this.actionDispatcher.dispatchAll([{ kind: HIDE_CONTEXTUAL_TOOLBAR_ACTION }, new EditLabelAction(label.id)]);
         }

@@ -71,6 +71,11 @@ import {
   zorderModule,
 } from 'sprotty';
 
+export class SExtendedLabel extends SLabel {
+  initialText: string;
+  preSelect: boolean = true;
+}
+
 const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, rebind) => {
   rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
   rebind(TYPES.LogLevel).toConstantValue(LogLevel.warn);
@@ -97,15 +102,15 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
   configureView({ bind, isBound }, 'port:square', RectangleView);
   configureView({ bind, isBound }, 'edge:straight', EdgeView);
   // @ts-ignore
-  configureModelElement(context, 'label:inside-center', SLabel, LabelView);
+  configureModelElement(context, 'label:inside-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:outside-center', SLabel, LabelView);
+  configureModelElement(context, 'label:outside-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-begin', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-begin', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-center', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-end', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-end', SExtendedLabel, LabelView);
   // @ts-ignore
   configureView({ bind, isBound }, 'comp:main', SCompartmentView);
   configureView({ bind, isBound }, 'html', HtmlRootView);
@@ -117,9 +122,13 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
 
 class EditLabelUIWithInitialContent extends EditLabelUI {
   protected applyTextContents() {
-    if (this.label) {
-      this.inputElement.value = this.label.text;
-      //this.inputElement.setSelectionRange(0, this.inputElement.value.length);
+    if (this.label instanceof SExtendedLabel) {
+      this.inputElement.value = this.label.initialText || this.label.text;
+      if (this.label.preSelect) {
+        this.inputElement.setSelectionRange(0, this.inputElement.value.length);
+      }
+    } else {
+      super.applyTextContents();
     }
   }
 }
