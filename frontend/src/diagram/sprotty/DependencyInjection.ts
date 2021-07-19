@@ -30,6 +30,7 @@ import {
 import { Container, ContainerModule, decorate, inject } from 'inversify';
 import {
   boundsModule,
+  configureActionHandler,
   configureModelElement,
   configureView,
   configureViewerOptions,
@@ -38,6 +39,8 @@ import {
   edgeEditModule,
   edgeLayoutModule,
   EditLabelAction,
+  EditLabelActionHandler,
+  EditLabelUI,
   exportModule,
   fadeModule,
   graphModule,
@@ -45,7 +48,6 @@ import {
   HtmlRootView,
   KeyListener,
   labelEditModule,
-  labelEditUiModule,
   LogLevel,
   modelSourceModule,
   MouseListener,
@@ -68,6 +70,11 @@ import {
   ZoomMouseListener,
   zorderModule,
 } from 'sprotty';
+
+export class SExtendedLabel extends SLabel {
+  initialText: string;
+  preSelect: boolean = true;
+}
 
 const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, rebind) => {
   rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
@@ -95,15 +102,15 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
   configureView({ bind, isBound }, 'port:square', RectangleView);
   configureView({ bind, isBound }, 'edge:straight', EdgeView);
   // @ts-ignore
-  configureModelElement(context, 'label:inside-center', SLabel, LabelView);
+  configureModelElement(context, 'label:inside-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:outside-center', SLabel, LabelView);
+  configureModelElement(context, 'label:outside-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-begin', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-begin', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-center', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-center', SExtendedLabel, LabelView);
   // @ts-ignore
-  configureModelElement(context, 'label:edge-end', SLabel, LabelView);
+  configureModelElement(context, 'label:edge-end', SExtendedLabel, LabelView);
   // @ts-ignore
   configureView({ bind, isBound }, 'comp:main', SCompartmentView);
   configureView({ bind, isBound }, 'html', HtmlRootView);
@@ -111,6 +118,26 @@ const siriusWebContainerModule = new ContainerModule((bind, unbind, isBound, reb
   configureView({ bind, isBound }, 'pre-rendered', PreRenderedView);
   configureView({ bind, isBound }, 'routing-point', SRoutingHandleView);
   configureView({ bind, isBound }, 'volatile-routing-point', SRoutingHandleView);
+});
+
+class EditLabelUIWithInitialContent extends EditLabelUI {
+  protected applyTextContents() {
+    if (this.label instanceof SExtendedLabel) {
+      this.inputElement.value = this.label.initialText || this.label.text;
+      if (this.label.preSelect) {
+        this.inputElement.setSelectionRange(0, this.inputElement.value.length);
+      }
+    } else {
+      super.applyTextContents();
+    }
+  }
+}
+
+const labelEditUiModule = new ContainerModule((bind, _unbind, isBound) => {
+  const context = { bind, isBound };
+  configureActionHandler(context, EditLabelAction.KIND, EditLabelActionHandler);
+  bind(EditLabelUIWithInitialContent).toSelf().inSingletonScope();
+  bind(TYPES.IUIExtension).toService(EditLabelUIWithInitialContent);
 });
 
 /**
@@ -258,7 +285,7 @@ export const createDependencyInjectionContainer = (containerId, onSelectElement,
         event.key.length === 1 &&
         directEditActivationValidCharacters.test(event.key);
       if (validFirstInputChar) {
-        return [{ kind: EditLabelAction.KIND, element }];
+        return [{ kind: EditLabelAction.KIND, element, firstChar: event.key }];
       }
     }
     return [];
