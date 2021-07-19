@@ -1,0 +1,57 @@
+= ADR-010 - Adopt a Shared Vocabulary
+
+== Context
+
+Given our long history with Sirius Desktop and the way it used modeling and EMF-specific terms, we tend to reuse these (at least in our discussions).
+For Sirius Web, we do not want to be limited to EMF, or even a modeling/MDE point of view, so we need to use different terms.
+
+We need to decide on a common vocabulary, both for the user-visible elements (e.g. do we talk about "Documents", or "Models"? is it "Modeler" or "Studio", or do both exist but represent slightly different things?) and also more internally on the technical terms.
+
+== Decision
+
+=== Roles
+
+These represent the different kinds of _users_ who use Sirius Web.
+An actual physical person can have different roles at different times, but having clear names for the different roles will help makes things clearer (for example in the documentation or when designing usage scenarios).
+
+* **End User**: uses an already deployed Sirius Web instance.
+  End users actually interact with concrete **studios** defined and deployed in said instance.
+  They use the studios to create/edit/visualize **documents** through the different **representations** that are defined for them in the studio. +
+  _QUESTION:_ should we have specific terms to distinguish users who are only interested in viewing documents/representations from those who actually produce/edit the content?
+  This could (maybe) help prioritizing some scenarios, but I'm not sure it's worth the added complexity.
+* **Studio Maker**: extends the Sirius Web platform by authoring a concrete **studio**.
+  This corresponds to the "specifier" role in Sirius Desktop.
+  Sirius Web will provide different ways to create a studio, targeted at studio makers with different needs & technical capabilities.
+* **Platform Customizer**: a developer who uses and/or extends the components provided in _Sirius Components_ to build a concrete functional _Sirius Web_ application.
+  For example, the `sirius-web-sample-application` project, which configures the _Flow Designer_ studio using the Sirius Desktop compatibility layer, would be created by a platform customizer.
+  A platform customizer should be familiar with Java and Spring Boot.
+* **Server Administrator**: is responsible for deploying a concrete instance of the Sirius Web platform and the associated services (e.g. database server).
+  A server administrator should be familiar with deploying Spring Boot (or at least Java-based) servers and PostgreSQL databases.
+
+=== Concepts
+
+The following concepts are the ones **end-users** are exposed to and interact with:
+
+* **Project**
+* **(Data) Model**
+* **(Data) View**
+** **Diagram**
+** **Property Sheet**
+** **Form**
+
+The following concepts are primarily used by **studio makers**, but _platform customizers_ (and to a lesser degree _server administrators_) also need to be aware of them.
+
+* **Domain Definition**
+* **View Definition**
+* **Studio**: defines (or references) one or more **Domain Definition** with one or more **View Definition** that work together to provide actual modeling capabilities to end-users.
+
+== Status
+
+Draft.
+
+== Consequences
+
+We need to:
+* Update the frontend UI (if needed) to use the terms we agreed upon consistently.
+* Update the documentation accordingly.
+* Update the code if needed to avoid inconsistencies between the implementation and the UI.
