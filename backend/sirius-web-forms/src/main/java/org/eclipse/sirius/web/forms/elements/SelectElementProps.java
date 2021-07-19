@@ -37,6 +37,8 @@ public final class SelectElementProps implements IProps {
 
     private List<SelectOption> options;
 
+    private boolean valueRequired;
+
     private String value;
 
     private Function<String, Status> newValueHandler;
@@ -57,6 +59,10 @@ public final class SelectElementProps implements IProps {
         return this.options;
     }
 
+    public boolean isValueRequired() {
+        return this.valueRequired;
+    }
+
     public String getValue() {
         return this.value;
     }
@@ -71,8 +77,8 @@ public final class SelectElementProps implements IProps {
 
     @Override
     public String toString() {
-        String pattern = "{0} '{'id: {1}, label: {2}, value: {3}, options:{4}'}'"; //$NON-NLS-1$
-        return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.id, this.label, this.value, this.options);
+        String pattern = "{0} '{'id: {1}, label: {2}, value: {3}, valueRequired: {4}, options:{5}'}'"; //$NON-NLS-1$
+        return MessageFormat.format(pattern, this.getClass().getSimpleName(), this.id, this.label, this.value, this.valueRequired, this.options);
     }
 
     /**
@@ -88,6 +94,8 @@ public final class SelectElementProps implements IProps {
         private String label;
 
         private List<SelectOption> options;
+
+        private boolean valueRequired;
 
         private String value;
 
@@ -107,6 +115,11 @@ public final class SelectElementProps implements IProps {
             return this;
         }
 
+        public Builder valueRequired(boolean valueRequired) {
+            this.valueRequired = valueRequired;
+            return this;
+        }
+
         public Builder value(String value) {
             this.value = value;
             return this;
@@ -122,6 +135,7 @@ public final class SelectElementProps implements IProps {
             selectElementProps.id = Objects.requireNonNull(this.id);
             selectElementProps.label = Objects.requireNonNull(this.label);
             selectElementProps.options = Objects.requireNonNull(this.options);
+            selectElementProps.valueRequired = this.valueRequired;
             selectElementProps.value = this.value;
             selectElementProps.newValueHandler = Objects.requireNonNull(this.newValueHandler);
             return selectElementProps;

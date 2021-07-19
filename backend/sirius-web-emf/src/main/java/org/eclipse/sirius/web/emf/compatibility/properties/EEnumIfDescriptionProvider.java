@@ -32,7 +32,7 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.sirius.web.compat.forms.WidgetIdProvider;
 import org.eclipse.sirius.web.forms.components.SelectComponent;
 import org.eclipse.sirius.web.forms.description.IfDescription;
-import org.eclipse.sirius.web.forms.description.RadioDescription;
+import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class EEnumIfDescriptionProvider {
 
     private static final String IF_DESCRIPTION_ID = "EEnum"; //$NON-NLS-1$
 
-    private static final String RADIO_DESCRIPTION_ID = "Radio"; //$NON-NLS-1$
+    private static final String SELECT_DESCRIPTION_ID = "Select"; //$NON-NLS-1$
 
     private final Logger logger = LoggerFactory.getLogger(EEnumIfDescriptionProvider.class);
 
@@ -61,7 +61,7 @@ public class EEnumIfDescriptionProvider {
         // @formatter:off
         return IfDescription.newIfDescription(IF_DESCRIPTION_ID)
                 .predicate(this.getPredicate())
-                .widgetDescription(this.getRadioDescription())
+                .widgetDescription(this.getSelectDescription())
                 .build();
         // @formatter:on
     }
@@ -77,18 +77,30 @@ public class EEnumIfDescriptionProvider {
         };
     }
 
-    private RadioDescription getRadioDescription() {
+    private SelectDescription getSelectDescription() {
         // @formatter:off
-        return RadioDescription.newRadioDescription(RADIO_DESCRIPTION_ID)
+        return SelectDescription.newSelectDescription(SELECT_DESCRIPTION_ID)
                 .idProvider(new WidgetIdProvider())
                 .labelProvider(this.getLabelProvider())
+                .valueProvider(this.getValueProvider())
                 .optionsProvider(this.getOptionsProvider())
-                .optionSelectedProvider(this.getOptionSelectedProvider())
+                .valueRequiredProvider(this.getValueRequiredProvider())
                 .optionIdProvider(this.getOptionIdProvider())
                 .optionLabelProvider(this.getOptionLabelProvider())
                 .newValueHandler(this.getNewValueHandler())
                 .build();
         // @formatter:on
+    }
+
+    private Function<VariableManager, Boolean> getValueRequiredProvider() {
+        return variableManager -> {
+            Object feature = variableManager.getVariables().get(PropertiesDefaultDescriptionProvider.ESTRUCTURAL_FEATURE);
+            if (feature instanceof EStructuralFeature) {
+                return ((EStructuralFeature) feature).isRequired();
+            } else {
+                return false;
+            }
+        };
     }
 
     private Function<VariableManager, String> getLabelProvider() {
@@ -116,7 +128,7 @@ public class EEnumIfDescriptionProvider {
         return variableManager -> {
             Object litteral = variableManager.getVariables().get(SelectComponent.CANDIDATE_VARIABLE);
             if (litteral instanceof Enumerator) {
-                return Integer.valueOf(((Enumerator) litteral).getValue()).toString();
+                return Integer.toString(((Enumerator) litteral).getValue());
             }
             return ""; //$NON-NLS-1$
         };
@@ -132,27 +144,21 @@ public class EEnumIfDescriptionProvider {
         };
     }
 
-    private Function<VariableManager, Boolean> getOptionSelectedProvider() {
+    private Function<VariableManager, String> getValueProvider() {
         return variableManager -> {
-            var optionalEnumerator = variableManager.get(SelectComponent.CANDIDATE_VARIABLE, Enumerator.class);
-            if (optionalEnumerator.isPresent()) {
-                Enumerator enumerator = optionalEnumerator.get();
-                String optionLitteralId = Integer.valueOf(enumerator.getValue()).toString();
+            Object object = variableManager.getVariables().get(VariableManager.SELF);
+            Object eStructuralFeature = variableManager.getVariables().get(PropertiesDefaultDescriptionProvider.ESTRUCTURAL_FEATURE);
 
-                var optionalEObject = variableManager.get(VariableManager.SELF, EObject.class);
-                var optionalEStructuralFeature = variableManager.get(PropertiesDefaultDescriptionProvider.ESTRUCTURAL_FEATURE, EStructuralFeature.class);
-                if (optionalEObject.isPresent() && optionalEStructuralFeature.isPresent()) {
-                    EObject eObject = optionalEObject.get();
-                    EStructuralFeature eStructuralFeature = optionalEStructuralFeature.get();
+            if (object instanceof EObject && eStructuralFeature instanceof EAttribute) {
+                EObject eObject = (EObject) object;
+                EAttribute eAttribute = (EAttribute) eStructuralFeature;
 
-                    Object value = eObject.eGet(eStructuralFeature);
-                    if (value instanceof Enumerator) {
-                        String selectedLitteralId = Integer.valueOf(((Enumerator) value).getValue()).toString();
-                        return optionLitteralId.equals(selectedLitteralId);
-                    }
+                Object value = eObject.eGet(eAttribute);
+                if (value instanceof Enumerator) {
+                    return Integer.toString(((Enumerator) value).getValue());
                 }
             }
-            return false;
+            return null;
         };
     }
 

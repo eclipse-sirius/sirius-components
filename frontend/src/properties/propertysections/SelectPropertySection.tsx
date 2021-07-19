@@ -135,6 +135,22 @@ export const SelectPropertySection = ({
     sendUpdateWidgetFocus(false);
   };
 
+  let options = [];
+  if (!widget.valueRequired) {
+    options.push(
+      <MenuItem value="">
+        <em>None</em>
+      </MenuItem>
+    );
+  }
+  widget.options.forEach((option) =>
+    options.push(
+      <MenuItem value={option.id} key={option.id}>
+        {option.label}
+      </MenuItem>
+    )
+  );
+
   return (
     <div>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
@@ -147,14 +163,7 @@ export const SelectPropertySection = ({
         fullWidth
         data-testid={widget.label}
         disabled={readOnly}>
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {widget.options.map((option) => (
-          <MenuItem value={option.id} key={option.id}>
-            {option.label}
-          </MenuItem>
-        ))}
+        {options}
       </Select>
       <Snackbar
         anchorOrigin={{

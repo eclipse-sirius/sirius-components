@@ -36,6 +36,8 @@ public final class SelectDescription extends AbstractWidgetDescription {
 
     private Function<VariableManager, List<Object>> optionsProvider;
 
+    private Function<VariableManager, Boolean> valueRequiredProvider;
+
     private Function<VariableManager, String> optionIdProvider;
 
     private Function<VariableManager, String> optionLabelProvider;
@@ -58,6 +60,10 @@ public final class SelectDescription extends AbstractWidgetDescription {
 
     public Function<VariableManager, List<Object>> getOptionsProvider() {
         return this.optionsProvider;
+    }
+
+    public Function<VariableManager, Boolean> getValueRequiredProvider() {
+        return this.valueRequiredProvider;
     }
 
     public Function<VariableManager, String> getOptionIdProvider() {
@@ -101,6 +107,8 @@ public final class SelectDescription extends AbstractWidgetDescription {
 
         private Function<VariableManager, List<Object>> optionsProvider;
 
+        private Function<VariableManager, Boolean> valueRequiredProvider = variableManager -> false;
+
         private Function<VariableManager, String> optionIdProvider;
 
         private Function<VariableManager, String> optionLabelProvider;
@@ -125,6 +133,11 @@ public final class SelectDescription extends AbstractWidgetDescription {
 
         public Builder optionsProvider(Function<VariableManager, List<Object>> optionsProvider) {
             this.optionsProvider = Objects.requireNonNull(optionsProvider);
+            return this;
+        }
+
+        public Builder valueRequiredProvider(Function<VariableManager, Boolean> valueRequiredProvider) {
+            this.valueRequiredProvider = Objects.requireNonNull(valueRequiredProvider);
             return this;
         }
 
@@ -154,6 +167,7 @@ public final class SelectDescription extends AbstractWidgetDescription {
             selectDescription.idProvider = Objects.requireNonNull(this.idProvider);
             selectDescription.labelProvider = Objects.requireNonNull(this.labelProvider);
             selectDescription.optionsProvider = Objects.requireNonNull(this.optionsProvider);
+            selectDescription.valueRequiredProvider = Objects.requireNonNull(this.valueRequiredProvider);
             selectDescription.optionIdProvider = Objects.requireNonNull(this.optionIdProvider);
             selectDescription.optionLabelProvider = Objects.requireNonNull(this.optionLabelProvider);
             selectDescription.valueProvider = Objects.requireNonNull(this.valueProvider);
