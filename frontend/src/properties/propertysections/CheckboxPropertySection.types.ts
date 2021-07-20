@@ -18,7 +18,6 @@ export interface CheckboxPropertySectionProps {
   widget: Checkbox;
   subscribers: Subscriber[];
   readOnly: boolean;
-  hasDiagnostic: boolean;
 }
 
 export interface GQLEditCheckboxMutationData {

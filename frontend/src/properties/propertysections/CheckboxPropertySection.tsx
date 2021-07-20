@@ -61,7 +61,6 @@ export const CheckboxPropertySection = ({
   widget,
   subscribers,
   readOnly,
-  hasDiagnostic,
 }: CheckboxPropertySectionProps) => {
   const [message, setMessage] = useState(null);
 
@@ -130,7 +129,7 @@ export const CheckboxPropertySection = ({
   const onBlur = () => sendUpdateWidgetFocus(false);
 
   return (
-    <FormControl error={hasDiagnostic}>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <FormGroup row>
         <Checkbox
@@ -144,7 +143,7 @@ export const CheckboxPropertySection = ({
           disabled={readOnly}
         />
       </FormGroup>
-      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

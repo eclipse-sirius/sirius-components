@@ -21,7 +21,8 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.CheckboxDescription;
 import org.eclipse.sirius.web.forms.elements.CheckboxElementProps;
-import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -49,7 +50,7 @@ public class CheckboxComponent implements IComponent {
         BiFunction<VariableManager, Boolean, Status> genericHandler = checkboxDescription.getNewValueHandler();
         Function<Boolean, Status> specializedHandler = newValue -> genericHandler.apply(variableManager, newValue);
 
-        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(checkboxDescription, variableManager);
+        List<Element> children = List.of(new Element(DiagnosticComponent.class, new DiagnosticComponentProps(checkboxDescription, variableManager)));
 
         // @formatter:off
         CheckboxElementProps checkboxElementProps = CheckboxElementProps.newCheckboxElementProps(id)

@@ -70,7 +70,6 @@ export const RadioPropertySection = ({
   widget,
   subscribers,
   readOnly,
-  hasDiagnostic,
 }: RadioPropertySectionProps) => {
   const classes = useRadioPropertySectionStyles();
   const [message, setMessage] = useState(null);
@@ -142,7 +141,7 @@ export const RadioPropertySection = ({
 
   const selectedOption = widget.options.find((option) => option.selected);
   return (
-    <FormControl error={hasDiagnostic}>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <RadioGroup
         classes={{ root: classes.radioGroupRoot }}
@@ -160,7 +159,7 @@ export const RadioPropertySection = ({
           />
         ))}
       </RadioGroup>
-      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

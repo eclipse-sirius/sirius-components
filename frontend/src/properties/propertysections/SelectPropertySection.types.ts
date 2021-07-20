@@ -18,7 +18,6 @@ export interface SelectPropertySectionProps {
   widget: Select;
   subscribers: Subscriber[];
   readOnly: boolean;
-  hasDiagnostic: boolean;
 }
 
 export interface GQLEditSelectMutationData {

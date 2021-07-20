@@ -10,10 +10,18 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import { List, Subscriber } from 'form/Form.types';
+package org.eclipse.sirius.web.emf.services.validation;
 
-export interface ListPropertySectionProps {
-  widget: List;
-  subscribers: Subscriber[];
-  readonly: boolean;
+import org.assertj.core.api.Assertions;
+import org.eclipse.emf.common.util.Diagnostic;
+
+/**
+ * Entry point of all the AssertJ assertions for diagnostics.
+ *
+ * @author sbegaudeau
+ */
+public class DiagnosticAssertions extends Assertions {
+    public static DiagnosticAssert assertThat(Diagnostic diagnostic) {
+        return new DiagnosticAssert(diagnostic);
+    }
 }

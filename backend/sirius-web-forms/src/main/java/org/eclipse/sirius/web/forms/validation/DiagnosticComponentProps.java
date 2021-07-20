@@ -12,8 +12,11 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms.validation;
 
+import java.util.Objects;
+
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.forms.description.AbstractWidgetDescription;
+import org.eclipse.sirius.web.representations.VariableManager;
 
 /**
  * The properties of the diagnostic component for forms.
@@ -22,21 +25,21 @@ import org.eclipse.sirius.web.forms.description.AbstractWidgetDescription;
  */
 public class DiagnosticComponentProps implements IProps {
 
-    private Object diagnostic;
+    private final AbstractWidgetDescription widgetDescription;
 
-    private AbstractWidgetDescription widgetDescription;
+    private final VariableManager variableManager;
 
-    public DiagnosticComponentProps(Object diagnostic, AbstractWidgetDescription widgetDescription) {
-        this.diagnostic = diagnostic;
-        this.widgetDescription = widgetDescription;
-    }
-
-    public Object getDiagnostic() {
-        return this.diagnostic;
+    public DiagnosticComponentProps(AbstractWidgetDescription widgetDescription, VariableManager variableManager) {
+        this.widgetDescription = Objects.requireNonNull(widgetDescription);
+        this.variableManager = Objects.requireNonNull(variableManager);
     }
 
     public AbstractWidgetDescription getWidgetDescription() {
         return this.widgetDescription;
+    }
+
+    public VariableManager getVariableManager() {
+        return this.variableManager;
     }
 
 }

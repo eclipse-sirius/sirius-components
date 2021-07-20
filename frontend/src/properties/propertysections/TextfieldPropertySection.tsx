@@ -75,7 +75,6 @@ export const TextfieldPropertySection = ({
   widget,
   subscribers,
   readOnly,
-  hasDiagnostic,
 }: TextfieldPropertySectionProps) => {
   const [{ value: schemaValue, context }, dispatch] = useMachine<
     TextfieldPropertySectionContext,
@@ -208,8 +207,8 @@ export const TextfieldPropertySection = ({
         onKeyPress={onKeyPress}
         data-testid={widget.label}
         disabled={readOnly}
-        error={hasDiagnostic}
-        helperText={hasDiagnostic ? widget.diagnostics[0].message : null}
+        error={widget.diagnostics.length > 0}
+        helperText={widget.diagnostics[0]?.message}
       />
       <Snackbar
         anchorOrigin={{

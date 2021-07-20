@@ -20,7 +20,8 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.TextareaDescription;
 import org.eclipse.sirius.web.forms.elements.TextareaElementProps;
-import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -49,7 +50,7 @@ public class TextareaComponent implements IComponent {
             return textareaDescription.getNewValueHandler().apply(variableManager, newValue);
         };
 
-        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(textareaDescription, variableManager);
+        List<Element> children = List.of(new Element(DiagnosticComponent.class, new DiagnosticComponentProps(textareaDescription, variableManager)));
 
         // @formatter:off
         TextareaElementProps textareaElementProps = TextareaElementProps.newTextareaElementProps(id)

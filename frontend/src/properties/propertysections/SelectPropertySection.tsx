@@ -61,7 +61,6 @@ export const SelectPropertySection = ({
   widget,
   subscribers,
   readOnly,
-  hasDiagnostic,
 }: SelectPropertySectionProps) => {
   const [message, setMessage] = useState(null);
   const [isFocused, setFocus] = useState(false);
@@ -139,7 +138,7 @@ export const SelectPropertySection = ({
   };
 
   return (
-    <FormControl error={hasDiagnostic}>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <Select
         value={widget.value || ''}
@@ -159,7 +158,7 @@ export const SelectPropertySection = ({
           </MenuItem>
         ))}
       </Select>
-      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

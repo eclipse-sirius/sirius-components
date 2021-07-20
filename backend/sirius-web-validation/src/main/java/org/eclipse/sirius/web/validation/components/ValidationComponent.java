@@ -48,7 +48,7 @@ public class ValidationComponent implements IComponent {
 
         List<Element> children = new ArrayList<>();
 
-        List<Object> diagnostics = validationDescription.getDiagnosticsProviders().apply(variableManager);
+        List<Object> diagnostics = validationDescription.getDiagnosticsProvider().apply(variableManager);
         for (Object diagnostic : diagnostics) {
             DiagnosticComponentProps diagnosticComponentProps = new DiagnosticComponentProps(diagnostic, validationDescription);
             children.add(new Element(DiagnosticComponent.class, diagnosticComponentProps));

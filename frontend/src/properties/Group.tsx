@@ -63,7 +63,6 @@ const isCheckbox = (widget: Widget): widget is Checkbox => widget.__typename ===
 const isSelect = (widget: Widget): widget is Select => widget.__typename === 'Select';
 const isRadio = (widget: Widget): widget is Radio => widget.__typename === 'Radio';
 const isList = (widget: Widget): widget is List => widget.__typename === 'List';
-const containsDiagnostic = (widget: Widget) => widget.diagnostics.length > 0;
 
 const widgetToPropertySection = (
   editingContextId: string,
@@ -77,8 +76,6 @@ const widgetToPropertySection = (
     .filter((subscription) => subscription.widgetId === widget.id)
     .forEach((subscription) => subscribers.push(...subscription.subscribers));
 
-  const hasDiagnostic = containsDiagnostic(widget);
-
   let propertySection = null;
   if (isTextfield(widget) || isTextarea(widget)) {
     propertySection = (
@@ -89,7 +86,6 @@ const widgetToPropertySection = (
         subscribers={subscribers}
         key={widget.id}
         readOnly={readOnly}
-        hasDiagnostic={hasDiagnostic}
       />
     );
   } else if (isCheckbox(widget)) {
@@ -101,7 +97,6 @@ const widgetToPropertySection = (
         subscribers={subscribers}
         key={widget.id}
         readOnly={readOnly}
-        hasDiagnostic={hasDiagnostic}
       />
     );
   } else if (isSelect(widget)) {
@@ -113,7 +108,6 @@ const widgetToPropertySection = (
         subscribers={subscribers}
         key={widget.id}
         readOnly={readOnly}
-        hasDiagnostic={hasDiagnostic}
       />
     );
   } else if (isRadio(widget)) {
@@ -125,18 +119,11 @@ const widgetToPropertySection = (
         subscribers={subscribers}
         key={widget.id}
         readOnly={readOnly}
-        hasDiagnostic={hasDiagnostic}
       />
     );
   } else if (isList(widget)) {
     propertySection = (
-      <ListPropertySection
-        widget={widget}
-        key={widget.id}
-        subscribers={subscribers}
-        readonly={readOnly}
-        hasDiagnostic={hasDiagnostic}
-      />
+      <ListPropertySection widget={widget} key={widget.id} subscribers={subscribers} readonly={readOnly} />
     );
   } else {
     console.error(`Unsupported widget type ${widget.__typename}`);

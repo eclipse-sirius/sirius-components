@@ -22,7 +22,8 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.SelectOption;
 import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.forms.elements.SelectElementProps;
-import org.eclipse.sirius.web.forms.util.DiagnosticRendererUtil;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -51,7 +52,7 @@ public class SelectComponent implements IComponent {
         List<Object> optionCandidates = selectDescription.getOptionsProvider().apply(variableManager);
         String value = selectDescription.getValueProvider().apply(variableManager);
 
-        List<Element> children = new DiagnosticRendererUtil().renderDiagnostics(selectDescription, variableManager);
+        List<Element> children = List.of(new Element(DiagnosticComponent.class, new DiagnosticComponentProps(selectDescription, variableManager)));
 
         List<SelectOption> options = new ArrayList<>();
         for (Object candidate : optionCandidates) {

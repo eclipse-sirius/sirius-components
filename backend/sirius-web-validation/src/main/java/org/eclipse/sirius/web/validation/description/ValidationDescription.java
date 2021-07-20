@@ -43,14 +43,14 @@ public final class ValidationDescription implements IRepresentationDescription {
 
     private Predicate<VariableManager> canCreatePredicate;
 
-    private Function<VariableManager, List<Object>> diagnosticsProviders;
+    private Function<VariableManager, List<Object>> diagnosticsProvider;
 
     private Function<Object, String> kindProvider;
 
     private Function<Object, String> messageProvider;
-    
+
     private ValidationDescription() {
-     // Prevent instantiation
+        // Prevent instantiation
     }
 
     @Override
@@ -73,8 +73,8 @@ public final class ValidationDescription implements IRepresentationDescription {
         return this.canCreatePredicate;
     }
 
-    public Function<VariableManager, List<Object>> getDiagnosticsProviders() {
-        return this.diagnosticsProviders;
+    public Function<VariableManager, List<Object>> getDiagnosticsProvider() {
+        return this.diagnosticsProvider;
     }
 
     public Function<Object, String> getKindProvider() {
@@ -108,7 +108,7 @@ public final class ValidationDescription implements IRepresentationDescription {
 
         private Predicate<VariableManager> canCreatePredicate;
 
-        private Function<VariableManager, List<Object>> diagnosticsProviders;
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
 
         private Function<Object, String> kindProvider;
 
@@ -128,8 +128,8 @@ public final class ValidationDescription implements IRepresentationDescription {
             return this;
         }
 
-        public Builder diagnosticsProviders(Function<VariableManager, List<Object>> diagnosticsProviders) {
-            this.diagnosticsProviders = Objects.requireNonNull(diagnosticsProviders);
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
             return this;
         }
 
@@ -148,7 +148,7 @@ public final class ValidationDescription implements IRepresentationDescription {
             validationDescription.id = Objects.requireNonNull(this.id);
             validationDescription.label = Objects.requireNonNull(this.label);
             validationDescription.canCreatePredicate = Objects.requireNonNull(this.canCreatePredicate);
-            validationDescription.diagnosticsProviders = Objects.requireNonNull(this.diagnosticsProviders);
+            validationDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
             validationDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
             validationDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return validationDescription;

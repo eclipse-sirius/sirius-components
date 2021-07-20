@@ -12,11 +12,16 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms.validation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.sirius.web.components.Element;
+import org.eclipse.sirius.web.components.Fragment;
+import org.eclipse.sirius.web.components.FragmentProps;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.AbstractWidgetDescription;
+import org.eclipse.sirius.web.representations.VariableManager;
 
 /**
  * The component used to render the diagnostic for forms.
@@ -33,20 +38,29 @@ public class DiagnosticComponent implements IComponent {
 
     @Override
     public Element render() {
-        Object diagnostic = this.props.getDiagnostic();
-        AbstractWidgetDescription validationDescription = this.props.getWidgetDescription();
+        AbstractWidgetDescription widgetDescription = this.props.getWidgetDescription();
+        VariableManager variableManager = this.props.getVariableManager();
 
-        String kind = validationDescription.getKindProvider().apply(diagnostic);
-        String message = validationDescription.getMessageProvider().apply(diagnostic);
+        List<Element> children = new ArrayList<>();
 
-        // @formatter:off
-        DiagnosticElementProps diagnosticElementProps = DiagnosticElementProps.newDiagnosticElementProps(UUID.randomUUID())
-                .kind(kind)
-                .message(message)
-                .build();
-        // @formatter:on
+        List<Object> diagnostics = widgetDescription.getDiagnosticsProvider().apply(variableManager);
+        for (Object diagnostic : diagnostics) {
+            UUID id = UUID.randomUUID();
+            String kind = widgetDescription.getKindProvider().apply(diagnostic);
+            String message = widgetDescription.getMessageProvider().apply(diagnostic);
 
-        return new Element(DiagnosticElementProps.TYPE, diagnosticElementProps);
+            // @formatter:off
+            DiagnosticElementProps diagnosticElementProps = DiagnosticElementProps.newDiagnosticElementProps(id)
+                    .kind(kind)
+                    .message(message)
+                    .build();
+            // @formatter:on
+
+            children.add(new Element(DiagnosticElementProps.TYPE, diagnosticElementProps));
+        }
+
+        FragmentProps fragmentProps = new FragmentProps(children);
+        return new Fragment(fragmentProps);
     }
 
 }

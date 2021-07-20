@@ -69,7 +69,7 @@ public class ViewValidator implements EValidator {
         }
         if (eObject instanceof Conditional) {
             Conditional conditional = (Conditional) eObject;
-            isValid = this.conditionIsPresent(conditional, diagnostics, context) && isValid;
+            isValid = this.conditionIsPresent(conditional, diagnostics) && isValid;
         }
         return isValid;
     }
@@ -79,7 +79,7 @@ public class ViewValidator implements EValidator {
         return true;
     }
 
-    private boolean conditionIsPresent(Conditional conditional, DiagnosticChain diagnostics, Map<Object, Object> context) {
+    private boolean conditionIsPresent(Conditional conditional, DiagnosticChain diagnostics) {
         boolean isValid = !conditional.getCondition().isBlank();
 
         if (!isValid && diagnostics != null) {

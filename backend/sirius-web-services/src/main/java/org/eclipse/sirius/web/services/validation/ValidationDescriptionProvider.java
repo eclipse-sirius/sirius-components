@@ -48,20 +48,20 @@ public class ValidationDescriptionProvider implements IValidationDescriptionProv
         return ValidationDescription.newValidationDescription(UUID.nameUUIDFromBytes("validation_description".getBytes())) //$NON-NLS-1$
                 .label("Validation") //$NON-NLS-1$
                 .canCreatePredicate(canCreatePredicate)
-                .diagnosticsProviders(this::getDiagnosticsProviders)
+                .diagnosticsProvider(this::getDiagnosticsProvider)
                 .kindProvider(this::kindProvider)
                 .messageProvider(this::messageProvider)
                 .build();
         // @formatter:on
     }
 
-    private List<Object> getDiagnosticsProviders(VariableManager variableManager) {
+    private List<Object> getDiagnosticsProvider(VariableManager variableManager) {
         var optionaEditingContext = variableManager.get(IEditingContext.EDITING_CONTEXT, IEditingContext.class);
 
         // @formatter:off
         return optionaEditingContext
                 .map(this.validationService::validate)
-                .orElseGet(() -> List.of());
+                .orElseGet(List::of);
         // @formatter:on
     }
 

@@ -69,7 +69,7 @@ public class EMFValidationService implements IValidationService {
             if (Diagnostic.OK != diagnostic.getSeverity()) {
                 // @formatter:off
                 return diagnostic.getChildren().stream()
-                        .filter(diag -> this.filterDiagnosticByFeatureName(diag, feature))
+                        .filter(diag -> this.filterDiagnosticByFeature(diag, feature))
                         .collect(Collectors.toList());
                 // @formatter:on
             }
@@ -78,7 +78,7 @@ public class EMFValidationService implements IValidationService {
         return List.of();
     }
 
-    private boolean filterDiagnosticByFeatureName(Diagnostic diagnostic, Object feature) {
+    private boolean filterDiagnosticByFeature(Diagnostic diagnostic, Object feature) {
         if (diagnostic.getData() != null && !diagnostic.getData().isEmpty() && feature != null) {
             // @formatter:off
             return diagnostic.getData().stream()

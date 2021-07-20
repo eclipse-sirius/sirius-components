@@ -13,6 +13,7 @@
 package org.eclipse.sirius.web.emf.services.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sirius.web.emf.services.validation.DiagnosticAssertions.assertThat;
 
 import java.util.Map;
 
@@ -34,8 +35,6 @@ import org.eclipse.sirius.web.view.NodeDescription;
 import org.eclipse.sirius.web.view.NodeStyle;
 import org.eclipse.sirius.web.view.ViewFactory;
 import org.eclipse.sirius.web.view.ViewPackage;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -51,53 +50,38 @@ public class ViewValidatorTests {
 
     private static final String SIRIUS_WEB_EMF_PACKAGE = "org.eclipse.sirius.web.emf"; //$NON-NLS-1$
 
-    private ViewValidator viewValidator;
-
-    private ViewFactory viewFactory;
-
-    @BeforeEach
-    public void setup() {
-        this.viewValidator = new ViewValidator();
-        this.viewFactory = ViewFactory.eINSTANCE;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        this.viewValidator = null;
-        this.viewFactory = null;
-    }
-
     @Test
     public void testNodeStyleDefaultValuesAreValid() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        NodeStyle nodeStyle = this.viewFactory.createNodeStyle();
+        NodeStyle nodeStyle = ViewFactory.eINSTANCE.createNodeStyle();
 
-        boolean validatedView = this.viewValidator.validate(nodeStyle.eClass(), nodeStyle, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isTrue();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, ValidatorTestUtils.getNewBasicDiagnostic());
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(nodeStyle.eClass(), nodeStyle, diagnosticChain, defaultContext);
+        assertThat(validationResult).isTrue();
+
+        assertThat(diagnosticChain).isEqualTo(new BasicDiagnostic(Diagnostic.OK, null, 0, null, null));
     }
 
     @Test
     public void testConditionalNodeStyleDefaultValuesAreValid() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        NodeStyle conditionalNodeStyle = this.viewFactory.createConditionalNodeStyle();
+        NodeStyle conditionalNodeStyle = ViewFactory.eINSTANCE.createConditionalNodeStyle();
 
-        boolean validatedView = this.viewValidator.validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isTrue();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, ValidatorTestUtils.getNewBasicDiagnostic());
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, diagnosticChain, defaultContext);
+        assertThat(validationResult).isTrue();
+
+        assertThat(diagnosticChain).isEqualTo(new BasicDiagnostic(Diagnostic.OK, null, 0, null, null));
     }
 
     @Test
     public void testConditionalConditionIsAbsent() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        ConditionalNodeStyle conditionalNodeStyle = this.viewFactory.createConditionalNodeStyle();
+        ConditionalNodeStyle conditionalNodeStyle = ViewFactory.eINSTANCE.createConditionalNodeStyle();
         conditionalNodeStyle.setColor("black"); //$NON-NLS-1$
         conditionalNodeStyle.setCondition(""); //$NON-NLS-1$
 
-        BasicDiagnostic expected = ValidatorTestUtils.getNewBasicDiagnostic();
+        BasicDiagnostic expected = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
         // @formatter:off
         expected.add(new BasicDiagnostic(Diagnostic.ERROR,
                 SIRIUS_WEB_EMF_PACKAGE,
@@ -110,19 +94,19 @@ public class ViewValidatorTests {
             );
         // @formatter:on
 
-        boolean validatedView = this.viewValidator.validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isFalse();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, expected);
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, diagnosticChain, defaultContext);
+        assertThat(validationResult).isFalse();
+        assertThat(diagnosticChain).isEqualTo(expected);
     }
 
     @Test
     public void testNodeStyleColorIsAbsent() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        ConditionalNodeStyle conditionalNodeStyle = this.viewFactory.createConditionalNodeStyle();
+        ConditionalNodeStyle conditionalNodeStyle = ViewFactory.eINSTANCE.createConditionalNodeStyle();
         conditionalNodeStyle.setColor(""); //$NON-NLS-1$
 
-        BasicDiagnostic expected = ValidatorTestUtils.getNewBasicDiagnostic(Diagnostic.ERROR);
+        BasicDiagnostic expected = new BasicDiagnostic(Diagnostic.ERROR, null, 0, null, null);
         // @formatter:off
         expected.add(new BasicDiagnostic(Diagnostic.ERROR,
                 SIRIUS_WEB_EMF_PACKAGE,
@@ -135,23 +119,23 @@ public class ViewValidatorTests {
             );
         // @formatter:on
 
-        boolean validatedView = this.viewValidator.validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isFalse();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, expected);
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(conditionalNodeStyle.eClass(), conditionalNodeStyle, diagnosticChain, defaultContext);
+        assertThat(validationResult).isFalse();
+        assertThat(diagnosticChain).isEqualTo(expected);
     }
 
     @Test
     public void testNodeDescriptionInvalidDomain() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        NodeDescription nodeDescription = this.viewFactory.createNodeDescription();
+        NodeDescription nodeDescription = ViewFactory.eINSTANCE.createNodeDescription();
 
         ResourceSetImpl resourceSet = new ResourceSetImpl();
         XMIResourceImpl xmiResource = new XMIResourceImpl();
         xmiResource.getContents().add(nodeDescription);
         resourceSet.getResources().add(xmiResource);
 
-        BasicDiagnostic expected = ValidatorTestUtils.getNewBasicDiagnostic(Diagnostic.ERROR);
+        BasicDiagnostic expected = new BasicDiagnostic(Diagnostic.ERROR, null, 0, null, null);
         // @formatter:off
         expected.add(new BasicDiagnostic(Diagnostic.ERROR,
                 SIRIUS_WEB_EMF_PACKAGE,
@@ -165,16 +149,16 @@ public class ViewValidatorTests {
 
         // @formatter:on
 
-        boolean validatedView = this.viewValidator.validate(nodeDescription.eClass(), nodeDescription, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isFalse();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, expected);
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(nodeDescription.eClass(), nodeDescription, diagnosticChain, defaultContext);
+        assertThat(validationResult).isFalse();
+        assertThat(diagnosticChain).isEqualTo(expected);
     }
 
     @Test
     public void testNodeStyleDescriptionValidDomainInResourceSet() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        NodeDescription nodeDescription = this.viewFactory.createNodeDescription();
+        NodeDescription nodeDescription = ViewFactory.eINSTANCE.createNodeDescription();
         nodeDescription.setDomainType(SAMPLE_ENTITY_NAME);
 
         ResourceSetImpl resourceSet = new ResourceSetImpl();
@@ -191,16 +175,16 @@ public class ViewValidatorTests {
         resourceSet.getResources().add(viewResource);
         resourceSet.getResources().add(domainResource);
 
-        boolean validatedView = this.viewValidator.validate(nodeDescription.eClass(), nodeDescription, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isTrue();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, ValidatorTestUtils.getNewBasicDiagnostic());
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(nodeDescription.eClass(), nodeDescription, diagnosticChain, defaultContext);
+        assertThat(validationResult).isTrue();
+        assertThat(diagnosticChain).isEqualTo(new BasicDiagnostic(Diagnostic.OK, null, 0, null, null));
     }
 
     @Test
     public void testNodeStyleDescriptionValidDomainInPackageRegistry() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        NodeDescription nodeDescription = this.viewFactory.createNodeDescription();
+        NodeDescription nodeDescription = ViewFactory.eINSTANCE.createNodeDescription();
         nodeDescription.setDomainType(SAMPLE_ENTITY_NAME);
 
         ResourceSetImpl resourceSet = new ResourceSetImpl();
@@ -220,9 +204,11 @@ public class ViewValidatorTests {
         packageRegistryImpl.put(ePackage.getNsURI(), ePackage);
         resourceSet.setPackageRegistry(packageRegistryImpl);
 
-        boolean validatedView = this.viewValidator.validate(nodeDescription.eClass(), nodeDescription, basicDiagnostic, defaultContext);
-        assertThat(validatedView).isTrue();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, ValidatorTestUtils.getNewBasicDiagnostic());
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+        boolean validationResult = new ViewValidator().validate(nodeDescription.eClass(), nodeDescription, diagnosticChain, defaultContext);
+        assertThat(validationResult).isTrue();
+
+        assertThat(diagnosticChain).isEqualTo(new BasicDiagnostic(Diagnostic.OK, null, 0, null, null));
     }
 
 }

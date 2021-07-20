@@ -13,6 +13,7 @@
 package org.eclipse.sirius.web.emf.services.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sirius.web.emf.services.validation.DiagnosticAssertions.assertThat;
 
 import java.util.Map;
 
@@ -23,8 +24,6 @@ import org.eclipse.sirius.web.domain.Domain;
 import org.eclipse.sirius.web.domain.DomainFactory;
 import org.eclipse.sirius.web.domain.DomainPackage;
 import org.eclipse.sirius.web.emf.domain.DomainValidator;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,44 +33,34 @@ import org.junit.jupiter.api.Test;
  */
 public class DomainValidatorTests {
 
-    private DomainValidator domainValidator;
-
-    private DomainFactory domainFactory;
-
-    @BeforeEach
-    public void setup() {
-        this.domainValidator = new DomainValidator();
-        this.domainFactory = DomainFactory.eINSTANCE;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        this.domainValidator = null;
-        this.domainFactory = null;
-    }
-
     @Test
     public void testDomainShouldBeValid() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        Domain domain = this.domainFactory.createDomain();
+        Domain domain = DomainFactory.eINSTANCE.createDomain();
         domain.setName("Family"); //$NON-NLS-1$
         domain.setUri("domain://Family"); //$NON-NLS-1$
 
-        boolean validatedDomain = this.domainValidator.validate(domain.eClass(), domain, basicDiagnostic, defaultContext);
-        assertThat(validatedDomain).isTrue();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, ValidatorTestUtils.getNewBasicDiagnostic());
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+
+        boolean validationResult = new DomainValidator().validate(domain.eClass(), domain, diagnosticChain, defaultContext);
+        assertThat(validationResult).isTrue();
+
+        assertThat(diagnosticChain).isEqualTo(new BasicDiagnostic(Diagnostic.OK, null, 0, null, null));
     }
 
     @Test
     public void testDomainInvalidURI() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        Domain domain = this.domainFactory.createDomain();
+        Domain domain = DomainFactory.eINSTANCE.createDomain();
         domain.setName("Family"); //$NON-NLS-1$
         domain.setUri(""); //$NON-NLS-1$
 
-        BasicDiagnostic expected = ValidatorTestUtils.getNewBasicDiagnostic(Diagnostic.ERROR);
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+
+        boolean validationResult = new DomainValidator().validate(domain.eClass(), domain, diagnosticChain, defaultContext);
+        assertThat(validationResult).isFalse();
+
+        BasicDiagnostic expected = new BasicDiagnostic(Diagnostic.ERROR, null, 0, null, null);
         // @formatter:off
         expected.add(new BasicDiagnostic(Diagnostic.ERROR,
                 "org.eclipse.sirius.web.emf", //$NON-NLS-1$
@@ -84,20 +73,22 @@ public class DomainValidatorTests {
         }));
         // @formatter:on
 
-        boolean validatedDomain = this.domainValidator.validate(domain.eClass(), domain, basicDiagnostic, defaultContext);
-        assertThat(validatedDomain).isFalse();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, expected);
+        assertThat(diagnosticChain).isEqualTo(expected);
     }
 
     @Test
     public void testDomainInvalidName() {
-        BasicDiagnostic basicDiagnostic = ValidatorTestUtils.getNewBasicDiagnostic();
         Map<Object, Object> defaultContext = Diagnostician.INSTANCE.createDefaultContext();
-        Domain domain = this.domainFactory.createDomain();
+        Domain domain = DomainFactory.eINSTANCE.createDomain();
         domain.setName(""); //$NON-NLS-1$
         domain.setUri("domain://Family"); //$NON-NLS-1$
 
-        BasicDiagnostic expected = ValidatorTestUtils.getNewBasicDiagnostic(Diagnostic.WARNING);
+        BasicDiagnostic diagnosticChain = new BasicDiagnostic(Diagnostic.OK, null, 0, null, null);
+
+        boolean validationResult = new DomainValidator().validate(domain.eClass(), domain, diagnosticChain, defaultContext);
+        assertThat(validationResult).isFalse();
+
+        BasicDiagnostic expected = new BasicDiagnostic(Diagnostic.WARNING, null, 0, null, null);
         // @formatter:off
         expected.add(new BasicDiagnostic(Diagnostic.WARNING,
                 "org.eclipse.sirius.web.emf", //$NON-NLS-1$
@@ -109,9 +100,7 @@ public class DomainValidatorTests {
         }));
         // @formatter:on
 
-        boolean validatedDomain = this.domainValidator.validate(domain.eClass(), domain, basicDiagnostic, defaultContext);
-        assertThat(validatedDomain).isFalse();
-        ValidatorTestUtils.diagnosticAssert(basicDiagnostic, expected);
+        assertThat(diagnosticChain).isEqualTo(expected);
     }
 
 }

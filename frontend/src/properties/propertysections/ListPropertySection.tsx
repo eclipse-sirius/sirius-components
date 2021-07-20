@@ -40,7 +40,7 @@ const useListPropertySectionStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ListPropertySection = ({ widget, subscribers, hasDiagnostic }: ListPropertySectionProps) => {
+export const ListPropertySection = ({ widget, subscribers }: ListPropertySectionProps) => {
   const classes = useListPropertySectionStyles();
 
   let items = widget.items;
@@ -53,7 +53,7 @@ export const ListPropertySection = ({ widget, subscribers, hasDiagnostic }: List
   }
 
   return (
-    <FormControl error={hasDiagnostic}>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <Table className={classes.table}>
         <TableBody>
@@ -75,7 +75,7 @@ export const ListPropertySection = ({ widget, subscribers, hasDiagnostic }: List
           ))}
         </TableBody>
       </Table>
-      <FormHelperText>{hasDiagnostic ? widget.diagnostics[0].message : null}</FormHelperText>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
     </FormControl>
   );
 };

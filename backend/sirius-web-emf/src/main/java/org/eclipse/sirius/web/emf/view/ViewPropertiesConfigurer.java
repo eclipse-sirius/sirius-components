@@ -312,8 +312,8 @@ public class ViewPropertiesConfigurer implements IPropertiesDescriptionRegistryC
 
             if (optionalSelf.isPresent()) {
                 EObject self = optionalSelf.get();
-                List<Object> validate = this.validationService.validate(self, feature);
-                return validate;
+                List<Object> diagnostics = this.validationService.validate(self, feature);
+                return diagnostics;
             }
 
             return List.of();
