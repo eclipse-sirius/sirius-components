@@ -11,6 +11,8 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { useMutation } from '@apollo/client';
+import { FormHelperText } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -136,7 +138,7 @@ export const SelectPropertySection = ({
   };
 
   return (
-    <div>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
       <Select
         value={widget.value || ''}
@@ -156,6 +158,7 @@ export const SelectPropertySection = ({
           </MenuItem>
         ))}
       </Select>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -172,6 +175,6 @@ export const SelectPropertySection = ({
         }
         data-testid="error"
       />
-    </div>
+    </FormControl>
   );
 };

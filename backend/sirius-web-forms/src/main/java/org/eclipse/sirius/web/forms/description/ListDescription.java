@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -99,6 +99,12 @@ public final class ListDescription extends AbstractWidgetDescription {
 
         private Function<VariableManager, String> itemImageURLProvider;
 
+        private Function<VariableManager, List<Object>> diagnosticsProvider;
+
+        private Function<Object, String> kindProvider;
+
+        private Function<Object, String> messageProvider;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -133,6 +139,21 @@ public final class ListDescription extends AbstractWidgetDescription {
             return this;
         }
 
+        public Builder diagnosticsProvider(Function<VariableManager, List<Object>> diagnosticsProvider) {
+            this.diagnosticsProvider = Objects.requireNonNull(diagnosticsProvider);
+            return this;
+        }
+
+        public Builder kindProvider(Function<Object, String> kindProvider) {
+            this.kindProvider = Objects.requireNonNull(kindProvider);
+            return this;
+        }
+
+        public Builder messageProvider(Function<Object, String> messageProvider) {
+            this.messageProvider = Objects.requireNonNull(messageProvider);
+            return this;
+        }
+
         public ListDescription build() {
             ListDescription listDescription = new ListDescription();
             listDescription.id = Objects.requireNonNull(this.id);
@@ -142,6 +163,9 @@ public final class ListDescription extends AbstractWidgetDescription {
             listDescription.itemIdProvider = Objects.requireNonNull(this.itemIdProvider);
             listDescription.itemLabelProvider = Objects.requireNonNull(this.itemLabelProvider);
             listDescription.itemImageURLProvider = Objects.requireNonNull(this.itemImageURLProvider);
+            listDescription.diagnosticsProvider = Objects.requireNonNull(this.diagnosticsProvider);
+            listDescription.kindProvider = Objects.requireNonNull(this.kindProvider);
+            listDescription.messageProvider = Objects.requireNonNull(this.messageProvider);
             return listDescription;
         }
     }

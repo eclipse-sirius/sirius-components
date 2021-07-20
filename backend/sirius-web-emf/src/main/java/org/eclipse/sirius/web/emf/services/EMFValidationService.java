@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.Diagnostic;
@@ -54,36 +53,47 @@ public class EMFValidationService implements IValidationService {
     @Override
     public List<Object> validate(IEditingContext editingContext) {
         // @formatter:off
-        List<Diagnostic> diagnostics = Optional.of(editingContext)
+        return Optional.of(editingContext)
             .filter(EditingContext.class::isInstance)
             .map(EditingContext.class::cast)
             .map(this::validate)
             .orElseGet(List::of);
-
-        return diagnostics.stream()
-            .map(this::convertToDiagnostic)
-            .collect(Collectors.toList());
         // @formatter:on
     }
 
-    private List<Diagnostic> validate(EditingContext editingContext) {
+    @Override
+    public List<Object> validate(Object object, Object feature) {
+        if (object instanceof EObject) {
+            Diagnostician diagnostician = this.getNewDiagnostician();
+            Diagnostic diagnostic = diagnostician.validate((EObject) object);
+            if (Diagnostic.OK != diagnostic.getSeverity()) {
+                // @formatter:off
+                return diagnostic.getChildren().stream()
+                        .filter(diag -> this.filterDiagnosticByFeature(diag, feature))
+                        .collect(Collectors.toList());
+                // @formatter:on
+            }
+        }
+
+        return List.of();
+    }
+
+    private boolean filterDiagnosticByFeature(Diagnostic diagnostic, Object feature) {
+        if (diagnostic.getData() != null && !diagnostic.getData().isEmpty() && feature != null) {
+            // @formatter:off
+            return diagnostic.getData().stream()
+                    .anyMatch(feature::equals);
+            // @formatter:on
+        }
+        return false;
+    }
+
+    private List<Object> validate(EditingContext editingContext) {
         AdapterFactoryEditingDomain domain = editingContext.getDomain();
 
         Map<Object, Object> options = new HashMap<>();
         options.put(Diagnostician.VALIDATE_RECURSIVELY, true);
-        Diagnostician diagnostician = new Diagnostician(this.eValidatorRegistry) {
-            @Override
-            public String getObjectLabel(EObject eObject) {
-                if (EMFValidationService.this.composedAdapterFactory instanceof IItemLabelProvider) {
-                    IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
-                    if (itemLabelProvider != null) {
-                        return itemLabelProvider.getText(eObject);
-                    }
-                }
-
-                return super.getObjectLabel(eObject);
-            }
-        };
+        Diagnostician diagnostician = this.getNewDiagnostician();
 
         // @formatter:off
         return domain.getResourceSet().getResources().stream()
@@ -96,28 +106,17 @@ public class EMFValidationService implements IValidationService {
         // @formatter:on
     }
 
-    private org.eclipse.sirius.web.validation.Diagnostic convertToDiagnostic(Diagnostic diagnostic) {
-        String kind = ""; //$NON-NLS-1$
-        switch (diagnostic.getSeverity()) {
-        case org.eclipse.emf.common.util.Diagnostic.ERROR:
-            kind = "Error"; //$NON-NLS-1$
-            break;
-        case org.eclipse.emf.common.util.Diagnostic.WARNING:
-            kind = "Warning"; //$NON-NLS-1$
-            break;
-        case org.eclipse.emf.common.util.Diagnostic.INFO:
-            kind = "Info"; //$NON-NLS-1$
-            break;
-        default:
-            break;
-        }
+    private Diagnostician getNewDiagnostician() {
+        return new Diagnostician(this.eValidatorRegistry) {
+            @Override
+            public String getObjectLabel(EObject eObject) {
+                IItemLabelProvider itemLabelProvider = (IItemLabelProvider) EMFValidationService.this.composedAdapterFactory.adapt(eObject, IItemLabelProvider.class);
+                if (itemLabelProvider != null) {
+                    return itemLabelProvider.getText(eObject);
+                }
 
-        // @formatter:off
-        return org.eclipse.sirius.web.validation.Diagnostic.newDiagnostic(UUID.randomUUID())
-                .kind(kind)
-                .message(diagnostic.getMessage())
-                .build();
-        // @formatter:on
+                return super.getObjectLabel(eObject);
+            }
+        };
     }
-
 }

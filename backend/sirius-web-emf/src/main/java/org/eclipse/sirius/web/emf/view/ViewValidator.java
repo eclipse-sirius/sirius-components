@@ -33,7 +33,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.sirius.web.domain.Domain;
 import org.eclipse.sirius.web.domain.DomainPackage;
 import org.eclipse.sirius.web.domain.Entity;
+import org.eclipse.sirius.web.view.Conditional;
 import org.eclipse.sirius.web.view.NodeDescription;
+import org.eclipse.sirius.web.view.NodeStyle;
+import org.eclipse.sirius.web.view.ViewPackage;
 
 /**
  * The validator for View.
@@ -60,12 +63,62 @@ public class ViewValidator implements EValidator {
             NodeDescription nodeDescription = (NodeDescription) eObject;
             isValid = this.hasProperDomainType(nodeDescription, diagnostics) && isValid;
         }
+        if (eObject instanceof NodeStyle) {
+            NodeStyle nodeStyle = (NodeStyle) eObject;
+            isValid = this.hasProperColor(nodeStyle, diagnostics) && isValid;
+        }
+        if (eObject instanceof Conditional) {
+            Conditional conditional = (Conditional) eObject;
+            isValid = this.conditionIsPresent(conditional, diagnostics) && isValid;
+        }
         return isValid;
     }
 
     @Override
     public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
         return true;
+    }
+
+    private boolean conditionIsPresent(Conditional conditional, DiagnosticChain diagnostics) {
+        boolean isValid = !conditional.getCondition().isBlank();
+
+        if (!isValid && diagnostics != null) {
+            // @formatter:off
+            BasicDiagnostic basicDiagnostic = new BasicDiagnostic(Diagnostic.ERROR,
+                    SIRIUS_WEB_EMF_PACKAGE,
+                    0,
+                    "The condition should not be empty", //$NON-NLS-1$
+                    new Object [] {
+                            conditional,
+                            ViewPackage.Literals.CONDITIONAL__CONDITION,
+                    });
+            // @formatter:on
+
+            diagnostics.add(basicDiagnostic);
+        }
+
+        return isValid;
+    }
+
+    private boolean hasProperColor(NodeStyle nodeStyle, DiagnosticChain diagnostics) {
+        boolean isValid = !nodeStyle.getColor().isBlank();
+
+        if (!isValid && diagnostics != null) {
+            // @formatter:off
+            BasicDiagnostic basicDiagnostic = new BasicDiagnostic(Diagnostic.ERROR,
+                    SIRIUS_WEB_EMF_PACKAGE,
+                    0,
+                    "The color should not be empty", //$NON-NLS-1$
+                    new Object [] {
+                            nodeStyle,
+                            ViewPackage.Literals.STYLE__COLOR,
+                    });
+            // @formatter:on
+
+            diagnostics.add(basicDiagnostic);
+        }
+
+        return isValid;
     }
 
     private boolean hasProperDomainType(NodeDescription nodeDescription, DiagnosticChain diagnostics) {
@@ -95,7 +148,10 @@ public class ViewValidator implements EValidator {
                     SIRIUS_WEB_EMF_PACKAGE,
                     0,
                     String.format(NODE_DESCRIPTION_INVALID_DOMAIN_TYPE_ERROR_MESSAGE, nodeDescription.getDomainType()),
-                    null);
+                    new Object [] {
+                            nodeDescription,
+                            ViewPackage.Literals.DIAGRAM_ELEMENT_DESCRIPTION__DOMAIN_TYPE,
+                    });
             // @formatter:on
 
             diagnostics.add(basicDiagnostic);

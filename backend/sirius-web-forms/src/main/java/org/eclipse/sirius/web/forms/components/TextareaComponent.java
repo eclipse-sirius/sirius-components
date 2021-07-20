@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.forms.components;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -19,6 +20,8 @@ import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.description.TextareaDescription;
 import org.eclipse.sirius.web.forms.elements.TextareaElementProps;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -47,11 +50,14 @@ public class TextareaComponent implements IComponent {
             return textareaDescription.getNewValueHandler().apply(variableManager, newValue);
         };
 
+        List<Element> children = List.of(new Element(DiagnosticComponent.class, new DiagnosticComponentProps(textareaDescription, variableManager)));
+
         // @formatter:off
         TextareaElementProps textareaElementProps = TextareaElementProps.newTextareaElementProps(id)
                 .label(label)
                 .value(value)
                 .newValueHandler(specializedHandler)
+                .children(children)
                 .build();
         return new Element(TextareaElementProps.TYPE, textareaElementProps);
         // @formatter:on

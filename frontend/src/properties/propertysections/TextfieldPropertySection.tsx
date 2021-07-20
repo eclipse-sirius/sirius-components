@@ -207,6 +207,8 @@ export const TextfieldPropertySection = ({
         onKeyPress={onKeyPress}
         data-testid={widget.label}
         disabled={readOnly}
+        error={widget.diagnostics.length > 0}
+        helperText={widget.diagnostics[0]?.message}
       />
       <Snackbar
         anchorOrigin={{

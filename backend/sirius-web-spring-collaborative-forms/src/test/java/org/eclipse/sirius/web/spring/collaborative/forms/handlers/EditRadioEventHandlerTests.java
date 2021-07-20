@@ -63,6 +63,7 @@ public class EditRadioEventHandlerTests {
                 .label("label") //$NON-NLS-1$
                 .newValueHandler(newValueHandler)
                 .options(List.of(option))
+                .diagnostics(List.of())
                 .build();
 
         Group group = Group.newGroup("groupId") //$NON-NLS-1$

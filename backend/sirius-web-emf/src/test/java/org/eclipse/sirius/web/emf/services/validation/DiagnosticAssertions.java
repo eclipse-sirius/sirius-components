@@ -10,21 +10,18 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.sirius.web.collaborative.validation.api;
+package org.eclipse.sirius.web.emf.services.validation;
 
-import java.util.List;
-
-import org.eclipse.sirius.web.core.api.IEditingContext;
+import org.assertj.core.api.Assertions;
+import org.eclipse.emf.common.util.Diagnostic;
 
 /**
- * Interface used to validate elements.
+ * Entry point of all the AssertJ assertions for diagnostics.
  *
- * @author gcoutable
+ * @author sbegaudeau
  */
-public interface IValidationService {
-
-    List<Object> validate(IEditingContext editingContext);
-
-    List<Object> validate(Object object, Object feature);
-
+public class DiagnosticAssertions extends Assertions {
+    public static DiagnosticAssert assertThat(Diagnostic diagnostic) {
+        return new DiagnosticAssert(diagnostic);
+    }
 }

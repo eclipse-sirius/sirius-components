@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,8 @@ import org.eclipse.sirius.web.components.IComponent;
 import org.eclipse.sirius.web.forms.SelectOption;
 import org.eclipse.sirius.web.forms.description.SelectDescription;
 import org.eclipse.sirius.web.forms.elements.SelectElementProps;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponent;
+import org.eclipse.sirius.web.forms.validation.DiagnosticComponentProps;
 import org.eclipse.sirius.web.representations.Status;
 import org.eclipse.sirius.web.representations.VariableManager;
 
@@ -50,6 +52,8 @@ public class SelectComponent implements IComponent {
         List<Object> optionCandidates = selectDescription.getOptionsProvider().apply(variableManager);
         String value = selectDescription.getValueProvider().apply(variableManager);
 
+        List<Element> children = List.of(new Element(DiagnosticComponent.class, new DiagnosticComponentProps(selectDescription, variableManager)));
+
         List<SelectOption> options = new ArrayList<>();
         for (Object candidate : optionCandidates) {
             VariableManager optionVariableManager = variableManager.createChild();
@@ -76,6 +80,7 @@ public class SelectComponent implements IComponent {
                 .options(options)
                 .value(value)
                 .newValueHandler(specializedHandler)
+                .children(children)
                 .build();
         return new Element(SelectElementProps.TYPE, selectElementProps);
         // @formatter:on

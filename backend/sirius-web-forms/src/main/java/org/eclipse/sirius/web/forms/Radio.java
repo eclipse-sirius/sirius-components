@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ import org.eclipse.sirius.web.annotations.Immutable;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLField;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLNonNull;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLObjectType;
+import org.eclipse.sirius.web.forms.validation.Diagnostic;
 import org.eclipse.sirius.web.representations.Status;
 
 /**
@@ -82,6 +83,8 @@ public final class Radio extends AbstractWidget {
 
         private Function<String, Status> newValueHandler;
 
+        private List<Diagnostic> diagnostics;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -101,12 +104,18 @@ public final class Radio extends AbstractWidget {
             return this;
         }
 
+        public Builder diagnostics(List<Diagnostic> diagnostics) {
+            this.diagnostics = Objects.requireNonNull(diagnostics);
+            return this;
+        }
+
         public Radio build() {
             Radio radio = new Radio();
             radio.id = Objects.requireNonNull(this.id);
             radio.label = Objects.requireNonNull(this.label);
             radio.options = Objects.requireNonNull(this.options);
             radio.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            radio.diagnostics = Objects.requireNonNull(this.diagnostics);
             return radio;
         }
     }

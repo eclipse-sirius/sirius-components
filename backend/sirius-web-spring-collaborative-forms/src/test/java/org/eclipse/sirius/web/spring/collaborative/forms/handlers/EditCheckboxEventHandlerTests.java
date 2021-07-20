@@ -56,6 +56,7 @@ public class EditCheckboxEventHandlerTests {
         Checkbox checkbox = Checkbox.newCheckbox(id)
                 .label("label") //$NON-NLS-1$
                 .newValueHandler(newValueHandler)
+                .diagnostics(List.of())
                 .build();
 
         Group group = Group.newGroup("groupId") //$NON-NLS-1$

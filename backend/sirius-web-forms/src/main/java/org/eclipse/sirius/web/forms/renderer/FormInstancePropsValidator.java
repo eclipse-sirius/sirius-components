@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import org.eclipse.sirius.web.forms.elements.RadioElementProps;
 import org.eclipse.sirius.web.forms.elements.SelectElementProps;
 import org.eclipse.sirius.web.forms.elements.TextareaElementProps;
 import org.eclipse.sirius.web.forms.elements.TextfieldElementProps;
+import org.eclipse.sirius.web.forms.validation.DiagnosticElementProps;
 
 /**
  * Used to validate the instance props.
@@ -53,6 +54,8 @@ public class FormInstancePropsValidator implements IInstancePropsValidator {
             checkValidProps = props instanceof TextareaElementProps;
         } else if (TextfieldElementProps.TYPE.equals(type)) {
             checkValidProps = props instanceof TextfieldElementProps;
+        } else if (DiagnosticElementProps.TYPE.equals(type)) {
+            checkValidProps = props instanceof DiagnosticElementProps;
         }
 
         return checkValidProps;

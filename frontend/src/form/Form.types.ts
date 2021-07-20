@@ -33,6 +33,13 @@ export interface Group {
 export interface Widget {
   id: string;
   __typename: string;
+  diagnostics: Diagnostic[];
+}
+
+export interface Diagnostic {
+  id: string;
+  kind: string;
+  message: string;
 }
 
 export interface WidgetSubscription {

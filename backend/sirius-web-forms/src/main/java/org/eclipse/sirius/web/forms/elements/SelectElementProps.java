@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.sirius.web.annotations.Immutable;
+import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.forms.SelectOption;
 import org.eclipse.sirius.web.representations.Status;
@@ -41,6 +42,8 @@ public final class SelectElementProps implements IProps {
 
     private Function<String, Status> newValueHandler;
 
+    private List<Element> children;
+
     private SelectElementProps() {
         // Prevent instantiation
     }
@@ -63,6 +66,11 @@ public final class SelectElementProps implements IProps {
 
     public Function<String, Status> getNewValueHandler() {
         return this.newValueHandler;
+    }
+
+    @Override
+    public List<Element> getChildren() {
+        return this.children;
     }
 
     public static Builder newSelectElementProps(String id) {
@@ -93,6 +101,8 @@ public final class SelectElementProps implements IProps {
 
         private Function<String, Status> newValueHandler;
 
+        private List<Element> children;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -117,6 +127,11 @@ public final class SelectElementProps implements IProps {
             return this;
         }
 
+        public Builder children(List<Element> children) {
+            this.children = Objects.requireNonNull(children);
+            return this;
+        }
+
         public SelectElementProps build() {
             SelectElementProps selectElementProps = new SelectElementProps();
             selectElementProps.id = Objects.requireNonNull(this.id);
@@ -124,6 +139,7 @@ public final class SelectElementProps implements IProps {
             selectElementProps.options = Objects.requireNonNull(this.options);
             selectElementProps.value = this.value;
             selectElementProps.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            selectElementProps.children = Objects.requireNonNull(this.children);
             return selectElementProps;
         }
     }

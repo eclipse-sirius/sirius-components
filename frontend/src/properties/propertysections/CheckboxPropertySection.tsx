@@ -11,7 +11,10 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { useMutation } from '@apollo/client';
+import { FormHelperText } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
@@ -126,18 +129,21 @@ export const CheckboxPropertySection = ({
   const onBlur = () => sendUpdateWidgetFocus(false);
 
   return (
-    <div>
+    <FormControl error={widget.diagnostics.length > 0}>
       <PropertySectionLabel label={widget.label} subscribers={subscribers} />
-      <Checkbox
-        name={widget.label}
-        color="primary"
-        checked={widget.booleanValue}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        data-testid={widget.label}
-        disabled={readOnly}
-      />
+      <FormGroup row>
+        <Checkbox
+          name={widget.label}
+          color="primary"
+          checked={widget.booleanValue}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          data-testid={widget.label}
+          disabled={readOnly}
+        />
+      </FormGroup>
+      <FormHelperText>{widget.diagnostics[0]?.message}</FormHelperText>
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -154,6 +160,6 @@ export const CheckboxPropertySection = ({
         }
         data-testid="error"
       />
-    </div>
+    </FormControl>
   );
 };

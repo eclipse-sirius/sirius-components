@@ -48,6 +48,11 @@ export const formRefreshedEventPayloadFragment = gql`
           widgets {
             id
             __typename
+            diagnostics {
+              id
+              kind
+              message
+            }
             ... on Textfield {
               label
               stringValue: value

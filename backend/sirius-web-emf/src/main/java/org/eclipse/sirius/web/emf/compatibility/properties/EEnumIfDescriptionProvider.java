@@ -87,6 +87,9 @@ public class EEnumIfDescriptionProvider {
                 .optionIdProvider(this.getOptionIdProvider())
                 .optionLabelProvider(this.getOptionLabelProvider())
                 .newValueHandler(this.getNewValueHandler())
+                .diagnosticsProvider((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
     }

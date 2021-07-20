@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -13,10 +13,12 @@
 package org.eclipse.sirius.web.forms.elements;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.sirius.web.annotations.Immutable;
+import org.eclipse.sirius.web.components.Element;
 import org.eclipse.sirius.web.components.IProps;
 import org.eclipse.sirius.web.representations.Status;
 
@@ -37,6 +39,8 @@ public final class CheckboxElementProps implements IProps {
 
     private Function<Boolean, Status> newValueHandler;
 
+    private List<Element> children;
+
     private CheckboxElementProps() {
         // Prevent instantiation
     }
@@ -55,6 +59,11 @@ public final class CheckboxElementProps implements IProps {
 
     public Function<Boolean, Status> getNewValueHandler() {
         return this.newValueHandler;
+    }
+
+    @Override
+    public List<Element> getChildren() {
+        return this.children;
     }
 
     public static Builder newCheckboxElementProps(String id) {
@@ -82,6 +91,8 @@ public final class CheckboxElementProps implements IProps {
 
         private Function<Boolean, Status> newValueHandler;
 
+        private List<Element> children;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -101,12 +112,18 @@ public final class CheckboxElementProps implements IProps {
             return this;
         }
 
+        public Builder children(List<Element> children) {
+            this.children = Objects.requireNonNull(children);
+            return this;
+        }
+
         public CheckboxElementProps build() {
             CheckboxElementProps checkboxElementProps = new CheckboxElementProps();
             checkboxElementProps.id = Objects.requireNonNull(this.id);
             checkboxElementProps.label = Objects.requireNonNull(this.label);
             checkboxElementProps.value = Objects.requireNonNull(this.value);
             checkboxElementProps.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            checkboxElementProps.children = Objects.requireNonNull(this.children);
             return checkboxElementProps;
         }
     }

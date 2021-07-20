@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.sirius.web.emf.compatibility.properties;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -66,6 +67,9 @@ public class EBooleanIfDescriptionProvider {
                 .labelProvider(this.getLabelProvider())
                 .valueProvider(this.getValueProvider())
                 .newValueHandler(this.getNewValueHandler())
+                .diagnosticsProvider((variableManager) -> List.of())
+                .kindProvider((object) -> "") //$NON-NLS-1$
+                .messageProvider((object) -> "") //$NON-NLS-1$
                 .build();
         // @formatter:on
     }

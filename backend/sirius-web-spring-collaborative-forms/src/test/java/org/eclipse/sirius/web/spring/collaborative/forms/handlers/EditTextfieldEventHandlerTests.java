@@ -57,6 +57,7 @@ public class EditTextfieldEventHandlerTests {
                 .label("label") //$NON-NLS-1$
                 .value("Previous value") //$NON-NLS-1$
                 .newValueHandler(newValueHandler)
+                .diagnostics(List.of())
                 .build();
 
         Group group = Group.newGroup("groupId") //$NON-NLS-1$

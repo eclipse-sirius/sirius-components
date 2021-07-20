@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Obeo.
+ * Copyright (c) 2019, 2021 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
 package org.eclipse.sirius.web.forms;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -20,6 +21,7 @@ import org.eclipse.sirius.web.annotations.Immutable;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLField;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLNonNull;
 import org.eclipse.sirius.web.annotations.graphql.GraphQLObjectType;
+import org.eclipse.sirius.web.forms.validation.Diagnostic;
 import org.eclipse.sirius.web.representations.Status;
 
 /**
@@ -81,6 +83,8 @@ public final class Textfield extends AbstractWidget {
 
         private Function<String, Status> newValueHandler;
 
+        private List<Diagnostic> diagnostics;
+
         private Builder(String id) {
             this.id = Objects.requireNonNull(id);
         }
@@ -100,12 +104,18 @@ public final class Textfield extends AbstractWidget {
             return this;
         }
 
+        public Builder diagnostics(List<Diagnostic> diagnostics) {
+            this.diagnostics = Objects.requireNonNull(diagnostics);
+            return this;
+        }
+
         public Textfield build() {
             Textfield textfield = new Textfield();
             textfield.id = Objects.requireNonNull(this.id);
             textfield.label = Objects.requireNonNull(this.label);
             textfield.value = Objects.requireNonNull(this.value);
             textfield.newValueHandler = Objects.requireNonNull(this.newValueHandler);
+            textfield.diagnostics = Objects.requireNonNull(this.diagnostics);
             return textfield;
         }
     }

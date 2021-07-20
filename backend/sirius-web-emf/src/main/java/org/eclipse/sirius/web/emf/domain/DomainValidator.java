@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.sirius.web.domain.Domain;
+import org.eclipse.sirius.web.domain.DomainPackage;
 
 /**
  * The validator for Domain.
@@ -63,7 +64,10 @@ public class DomainValidator implements EValidator {
                     SIRIUS_WEB_EMF_PACKAGE,
                     0,
                     String.format(DOMAIN_URI_SCHEME_ERROR_MESSAGE, domain.getName()),
-                    null);
+                    new Object [] {
+                            domain,
+                            DomainPackage.Literals.DOMAIN__URI,
+                    });
             // @formatter:on
 
             diagnostics.add(basicDiagnostic);
@@ -80,7 +84,10 @@ public class DomainValidator implements EValidator {
                     SIRIUS_WEB_EMF_PACKAGE,
                     0,
                     DOMAIN_NAME_ERROR_MESSAGE,
-                    null);
+                    new Object [] {
+                            domain,
+                            DomainPackage.Literals.NAMED_ELEMENT__NAME,
+                    });
             // @formatter:on
 
             diagnostics.add(basicDiagnostic);
